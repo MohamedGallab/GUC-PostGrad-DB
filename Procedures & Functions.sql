@@ -56,12 +56,14 @@ AS
 	FROM 
 		(
 		SELECT * 
-		FROM GUCianStudentRegisterThesis 
-		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
+		FROM 
+			GUCianStudentRegisterThesis 
+			INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
 		UNION 
 		SELECT * 
-		FROM NonGUCianStudentRegisterThesis
-		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
+		FROM 
+			NonGUCianStudentRegisterThesis
+			INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
 		)
 		AS allStudents
 		INNER JOIN Supervisor ON allStudents.supid = Supervisor.id
