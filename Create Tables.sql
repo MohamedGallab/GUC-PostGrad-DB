@@ -1,4 +1,5 @@
-create database PostGrad;
+create database PostGradDB;
+
 -- Yousef
 create table Student(
 	id int identity, 
