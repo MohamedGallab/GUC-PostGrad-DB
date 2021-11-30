@@ -1,4 +1,8 @@
-create database PostGradDB;
+CREATE DATABASE PostGradDB;
+
+GO
+
+USE PostGradDB;
 
 -- Yousef
 -- Entities
