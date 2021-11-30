@@ -135,9 +135,50 @@ CREATE TABLE NonGUCianStudentRegisterThesis(
 
 -- Wagdy
 -- Entities
+CREATE TABLE Publication(
+	id INT,
+	title VARCHAR(50),
+	pubDate DATE,
+	place VARCHAR(50),
+	accepted BIT,
+	host VARCHAR(50),
+	PRIMARY KEY(ID)
+);
 
+CREATE TABLE Payment(
+	id INT,
+	amount DECIMAL,
+	no_installments INT,
+	fundPercentage DECIMAL,
+	PRIMARY KEY(ID)
+);
+
+CREATE TABLE Examiner(
+	id INT,
+	name VARCHAR(20),
+	fieldOfWork VARCHAR(20),
+	isNational BIT,
+	PRIMARY KEY(ID)
+);
+
+CREATE TABLE Defense(
+	serialNumber int,
+	date DATE,
+	location VARCHAR(15),
+	grade DECIMAL,
+	PRIMARY KEY(serialNumber,date),
+	FOREIGN KEY(serialNumber) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
+);
 -- Relations
-
+CREATE TABLE ExaminerEvaluateDefense(
+	date DATE,
+	serialNo INT,
+	examinerId INT,
+	comment VARCHAR(300),
+	PRIMARY KEY(date,serialNo,examinerId),
+	FOREIGN KEY(serialNo,date) REFERENCES Defense ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(examinerId) REFERENCES Examiner ON DELETE CASCADE ON UPDATE CASCADE
+);
 -- Mahmoud
 -- Entities
 
