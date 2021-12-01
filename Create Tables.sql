@@ -4,8 +4,8 @@ GO
 
 USE PostGradDB;
 
--- Yousef
--- Entities
+-- Yousef Entities
+
 CREATE TABLE Student(
 	id INT identity, 
 	firstname VARCHAR(20),
@@ -58,7 +58,83 @@ CREATE TABLE NonGUCStudentPhoneNumber(
 	FOREIGN KEY(id) REFERENCES NonGucianStudent ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Relations
+-- Wael Entities
+
+CREATE TABLE Course(
+	id INT IDENTITY, 
+	fees DECIMAL(8,2),
+	creditHours INT,
+	courseCode VARCHAR(10),
+	PRIMARY KEY(id)
+);
+
+
+CREATE TABLE Supervisor(
+	id INT IDENTITY, 
+	first_name VARCHAR(20),
+	last_name VARCHAR(20),
+	email VARCHAR(50),
+	faculty VARCHAR(20),
+	--address VARCHAR(10),
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE Thesis(
+	serialNumber INT,
+	field VARCHAR(20),
+	type VARCHAR(10),
+	title VARCHAR(50),
+	startDate DATE,
+	endDate DATE,
+	defenseDate DATE,
+	years INT,
+	grade DECIMAL(4,2),
+	noExtension INT,
+	PRIMARY KEY(serialNumber)
+);
+
+-- Wagdy Entities
+
+CREATE TABLE Publication(
+	id INT,
+	title VARCHAR(50),
+	pubDate DATE,
+	place VARCHAR(50),
+	accepted BIT,
+	host VARCHAR(50),
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE Payment(
+	id INT,
+	amount DECIMAL,
+	no_installments INT,
+	fundPercentage DECIMAL,
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE Examiner(
+	id INT,
+	name VARCHAR(20),
+	fieldOfWork VARCHAR(20),
+	isNational BIT,
+	PRIMARY KEY(id)
+);
+
+CREATE TABLE Defense(
+	serialNumber int,
+	date DATE,
+	location VARCHAR(15),
+	grade DECIMAL,
+	PRIMARY KEY(serialNumber,date),
+	FOREIGN KEY(serialNumber) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Mahmoud Entities
+
+
+
+-- Moataz Relations
 
 CREATE TABLE NonGucianStudentPayForCourse(
 	sid INT, 
@@ -79,41 +155,7 @@ CREATE TABLE NonGucianStudentTakeCourse(
 	FOREIGN KEY(cid) REFERENCES Course ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Wael
--- Entities
-CREATE TABLE Course(
-	id INT IDENTITY, 
-	fees DECIMAL(8,2),
-	creditHours INT,
-	courseCode VARCHAR(10),
-	PRIMARY KEY(id)
-);
-
-
-CREATE TABLE Supervisor(
-	id INT IDENTITY, 
-	first_name VARCHAR(20),
-	last_name VARCHAR(20),
-	email VARCHAR(50),
-	faculty VARCHAR(20),
-	--address VARCHAR(10)
-	PRIMARY KEY(id)
-);
-
-CREATE TABLE Thesis(
-	serialNumber INT,
-	field VARCHAR(20),
-	type VARCHAR(10),
-	title VARCHAR(50),
-	startDate DATE,
-	endDate DATE,
-	defenseDate DATE,
-	years INT,
-	grade DECIMAL(4,2)
-	PRIMARY KEY(serialNumber)
-);
-
--- Relations
+-- Wael Relations
 
 CREATE TABLE GUCianStudentRegisterThesis(
 	sid INT,
@@ -135,43 +177,8 @@ CREATE TABLE NonGUCianStudentRegisterThesis(
 	FOREIGN KEY(serial_no) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Wagdy
--- Entities
-CREATE TABLE Publication(
-	id INT,
-	title VARCHAR(50),
-	pubDate DATE,
-	place VARCHAR(50),
-	accepted BIT,
-	host VARCHAR(50),
-	PRIMARY KEY(ID)
-);
+-- Wagdy Relations
 
-CREATE TABLE Payment(
-	id INT,
-	amount DECIMAL,
-	no_installments INT,
-	fundPercentage DECIMAL,
-	PRIMARY KEY(ID)
-);
-
-CREATE TABLE Examiner(
-	id INT,
-	name VARCHAR(20),
-	fieldOfWork VARCHAR(20),
-	isNational BIT,
-	PRIMARY KEY(ID)
-);
-
-CREATE TABLE Defense(
-	serialNumber int,
-	date DATE,
-	location VARCHAR(15),
-	grade DECIMAL,
-	PRIMARY KEY(serialNumber,date),
-	FOREIGN KEY(serialNumber) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
-);
--- Relations
 CREATE TABLE ExaminerEvaluateDefense(
 	date DATE,
 	serialNo INT,
@@ -181,7 +188,5 @@ CREATE TABLE ExaminerEvaluateDefense(
 	FOREIGN KEY(serialNo,date) REFERENCES Defense ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY(examinerId) REFERENCES Examiner ON DELETE CASCADE ON UPDATE CASCADE
 );
--- Mahmoud
--- Entities
 
--- Relations
+-- Mahmoud Relations
