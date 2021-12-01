@@ -158,6 +158,8 @@ CREATE TABLE Payment(
 CREATE TABLE Examiner(
 	id INT,
 	name VARCHAR(20),
+	email VARCHAR(50),
+	password VARCHAR(20),
 	fieldOfWork VARCHAR(20),
 	isNational BIT,
 	PRIMARY KEY(ID)

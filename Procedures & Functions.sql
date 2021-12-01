@@ -235,3 +235,50 @@ RETURN
 -- 5
 
 -- 6
+CREATE VIEW allStudents AS
+SELECT * 
+FROM GucianStudent
+-- a) View my profile that contains all my information.
+GO
+	CREATE PROC viewMyProfile
+	@studentId int
+	AS
+	SELECT*
+	FROM 
+
+-- b) Edit my profile (change any of my personal information).
+
+
+--c) As a Gucian graduate, add my undergarduate ID.
+
+
+
+
+--d) As a nonGucian student, view my courses’ grades
+
+
+
+--e) View all my payments and installments.
+--e-i)
+--e-ii)
+--e-iii)
+--e-iv)
+
+
+--f) Add and fill my progress report(s).
+--f-i)
+--f-ii)
+
+
+
+--g) View my progress report(s) evaluations.
+
+
+
+
+--h) Add publication.
+
+
+
+--i) Link publication to my thesis.
+
