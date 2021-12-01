@@ -137,7 +137,48 @@ CREATE TABLE Defense(
 
 -- Mahmoud Entities
 
+CREATE TABLE GUCianProgressReport(
+    sid INT,
+    no INT IDENTITY,
+    date DATE,
+    eval VARCHAR(50), --evaluation type is unclear idk if it's numeric or a comment or wtf i
+    state DECIMAL(5,2),
+    thesisSerialNumber INT,
+    supid INT,
 
+    PRIMARY KEY(sid,no),
+
+    FOREIGN KEY(supid) REFERENCES Supervisor,
+    FOREIGN KEY(thesisSerialNumber) REFERENCES Thesis,
+    FOREIGN KEY(sid) REFERENCES GucianStudent
+);
+
+CREATE TABLE NonGUCianProgressReport(
+    sid INT,
+    no INT IDENTITY,
+    date DATE,
+    eval VARCHAR(50), --evaluation type is unclear idk if it's numeric or a comment or wtf i
+    state DECIMAL(5,2),
+    thesisSerialNumber INT,
+    supid INT,
+
+    PRIMARY KEY(sid,no),
+
+    FOREIGN KEY(supid) REFERENCES Supervisor,
+    FOREIGN KEY(thesisSerialNumber) REFERENCES Thesis,
+    FOREIGN KEY(sid) REFERENCES NonGucianStudent
+);
+
+CREATE TABLE Installment(
+    date DATETIME,
+    paymentId INT,
+    amount DECIMAL(7,2),
+    done bit,
+
+    PRIMARY KEY(date,paymentId),
+
+    FOREIGN KEY(paymentId) REFERENCES Payment
+);
 
 -- Moataz Relations
 
@@ -195,3 +236,13 @@ CREATE TABLE ExaminerEvaluateDefense(
 );
 
 -- Mahmoud Relations
+CREATE TABLE ThesisHasPublication (
+    serialNo INT,
+    pubid INT,
+
+    FOREIGN KEY(serialNo) REFERENCES Thesis,
+    FOREIGN KEY(pubid) REFERENCES Publication,
+
+    PRIMARY KEY(serialNo,pubid)
+
+);
