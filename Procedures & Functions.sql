@@ -1,7 +1,5 @@
 USE PostGradDB
 
-GO
-
 -- 1
 
 -- 2
@@ -15,7 +13,6 @@ AS
 	SELECT *
 	FROM Supervisor
 RETURN
-GO
 
 -- b) view the profile of any supervisor that contains all his/her information.
 GO
@@ -26,7 +23,6 @@ AS
 	FROM Supervisor
 	WHERE Supervisor.id = @supId
 RETURN
-GO
 
 -- c) List all Theses in the system.
 GO
@@ -35,7 +31,6 @@ AS
 	SELECT *
 	FROM Thesis
 RETURN
-GO
 
 -- d) List the number of on going theses.
 GO
@@ -46,9 +41,9 @@ AS
 	FROM Thesis
 	WHERE Thesis.endDate IS NULL
 RETURN
-GO
 
 -- e) List all supervisors’ names currently supervising students, theses title, student name.
+-- what should the output be exactly
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
@@ -71,36 +66,68 @@ AS
 	WHERE
 		endDate IS NULL
 RETURN
-GO
 
--- c) List all Theses in the system.
+-- f) List nonGucians names, course code, and respective grade.
+-- what do I do with this input ?
 GO
-CREATE PROC AdminViewAllTheses
+CREATE PROC AdminListNonGucianCourse
+@courseID INT
+AS
+	SELECT NonGucianStudent.firstname, NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
+	FROM 
+		NonGucianStudentTakeCourse
+		INNER JOIN NonGucianStudent ON NonGucianStudentTakeCourse.sid = NonGucianStudent.id
+		INNER JOIN Course ON NonGucianStudentTakeCourse.cid = Course.id
+	WHERE 
+		@courseID = Course.id
+RETURN
+
+-- g) Update the number of thesis extension by 1.
+GO
+CREATE PROC AdminUpdateExtension
+@ThesisSerialNo INT
+AS
+	UPDATE Thesis
+	SET Thesis.noExtension = Thesis.noExtension + 1
+	WHERE Thesis.serialNumber = @ThesisSerialNo
+RETURN
+
+-- h) Issue a thesis payment.
+-- CHECK SCOPE IDENTITY & SUCCESS BIT
+GO
+CREATE PROC AdminIssueThesisPayment
+@ThesisSerialNo INT, @amount DECIMAL, @noOfInstallments INT, @fundPercentage DECIMAL,
+@Success BIT OUTPUT
+AS
+	INSERT INTO Payment
+	VALUES (@amount, @noOfInstallments, @fundPercentage);
+	UPDATE Thesis
+	SET Thesis.payment_id = SCOPE_IDENTITY()
+	WHERE Thesis.serialNumber = @ThesisSerialNo;
+	SET @Success = 1;
+RETURN
+
+-- i) view the profile of any student that contains all his/her information.
+GO
+CREATE PROC AdminViewStudentProfile
+@sid INT
 AS
 	SELECT *
-	FROM Thesis
+	FROM(
+		SELECT * 
+		FROM 
+			GUCianStudentRegisterThesis 
+			INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
+		UNION 
+		SELECT * 
+		FROM 
+			NonGUCianStudentRegisterThesis
+			INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
+		)
+		AS allStudents
+	WHERE
+		allStudents.sid = @sid
 RETURN
-GO
-
--- c) List all Theses in the system.
-GO
-CREATE PROC AdminViewAllTheses
-AS
-	SELECT *
-	FROM Thesis
-RETURN
-GO
-
--- c) List all Theses in the system.
-GO
-CREATE PROC AdminViewAllTheses
-AS
-	SELECT *
-	FROM Thesis
-RETURN
-GO
-
-
 
 
 
@@ -111,46 +138,68 @@ GO
 
 -- 4
 
--- a) Evaluate a student’s progress report, and give evaluation value 0 to 3.
+-- a) Evaluate a student’s progress report, and give evaluation value 0 to 3. DONE
 GO
 	CREATE PROC EvaluateProgressReport
-	@supervisorid int,
-	@thesisserialno int,
-	@progressreportno int,
-	@evaluation int
+	@supervisorid INT,
+	@thesisserialno INT,
+	@progressreportno INT,
+	@evaluation INT
 	AS
 		UPDATE GucianProgressReport
-		SET eval = @evaluation
+		SET GUCianProgressReport.eval = @evaluation
 		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no
 		UPDATE NonGUCianProgressReport
-		SET eval = @evaluation
+		SET NonGUCianProgressReport.eval = @evaluation
 		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no
 
 RETURN
 
--- b) View all my students’s names and years spent in the thesis.
-GO
-	CREATE PROC ViewSupStudentsYears
-	@supervisorID INT
-	AS
-		SELECT allStudents.firstname, allStudents.lastname, Thesis.years
-		FROM 
-			(
-			SELECT * 
-			FROM 
-				GUCianStudentRegisterThesis 
-				INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
-			UNION 
-			SELECT * 
-			FROM 
-				NonGUCianStudentRegisterThesis
-				INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
-			)
-			AS allStudents
-			INNER JOIN Supervisor ON allStudents.supid = Supervisor.id
-			INNER JOIN Thesis ON allStudents.serial_no = Thesis.serialNumber
-			WHERE @supervisorID = NonGUCianStudentRegisterThesis.supid
+-- b) View all my students’s names and years spent in the thesis. TWO SOLUTIONS, THIS ONE BETTER THAN COMMENTED
+--GO
+--	CREATE PROC ViewSupStudentsYears
+--	@supervisorID INT
+--	AS
+--		SELECT allStudents.firstname, allStudents.lastname, Thesis.years
+--		FROM 
+--			(
+--			SELECT * 
+--			FROM 
+--				GUCianStudentRegisterThesis 
+--				INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
+--			UNION 
+--			SELECT * 
+--			FROM 
+--				NonGUCianStudentRegisterThesis
+--				INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
+--			)
+--			AS allStudents
+--			INNER JOIN Supervisor ON allStudents.supid = Supervisor.id
+--			INNER JOIN Thesis ON allStudents.serial_no = Thesis.serialNumber
+--			WHERE @supervisorID = NonGUCianStudentRegisterThesis.supid
 	
+--RETURN
+
+GO 
+CREATE PROC ViewSupStudentsYears
+@supervisorID INT
+AS
+	SELECT AllStudents.firstname, AllStudents.lastname, AllStudents.years
+	from
+	(
+	SELECT * 
+	FROM GUCianStudentRegisterThesis
+		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.sid
+		INNER JOIN Thesis ON GUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
+	WHERE GUCianStudentRegisterThesis.supid = @supervisorID
+	UNION
+	SELECT * 
+	FROM NonGUCianStudentRegisterThesis
+		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.sid
+		INNER JOIN Thesis ON NonGUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
+	WHERE NonGUCianStudentRegisterThesis.supid = @supervisorID
+	)
+	AS AllStudents
 RETURN
 
 -- c) View my profile
@@ -163,7 +212,7 @@ GO
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
--- Update my personal information.
+-- Update my personal information. DONE QUESTION: SHOULD WE ASSUME ALL VALUES WILL BE AVAIABLE AS INPUTS?
 GO
 	CREATE PROC UpdateSupProfile
 	@supervisorID INT,
@@ -177,19 +226,20 @@ GO
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
--- d) View all publications of a student.
+-- d) View all publications of a student. DONE
+
 GO
 	CREATE PROC ViewAStudentPublications
 	@StudentID INT
 	AS
-		SELECT *
-		FROM GUCianStudentRegisterThesis 
+		SELECT * 
+		FROM GUCianStudentRegisterThesis
 			INNER JOIN ThesisHasPublication ON ThesisHasPublication.serialNo = GUCianStudentRegisterThesis.serial_no
 			INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
 		WHERE GUCianStudentRegisterThesis.sid = @StudentID
 		UNION
-		SELECT *
-		FROM NonGUCianStudentRegisterThesis 
+		SELECT * 
+		FROM NonGUCianStudentRegisterThesis
 			INNER JOIN ThesisHasPublication ON ThesisHasPublication.serialNo = NonGUCianStudentRegisterThesis.serial_no
 			INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
 		WHERE NonGUCianStudentRegisterThesis.sid = @StudentID
@@ -198,19 +248,29 @@ RETURN
 -- e) Add defense for a thesis GUCIAN
 GO
 	CREATE PROC AddDefenseGucian
-	@ThesisSerialNo int,
+	@ThesisSerialNo INT,
 	@DefenseDate Datetime, 
 	@DefenseLocation varchar(15)
 	AS
 	INSERT INTO DEFENSE (serialNumber ,date , location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
 RETURN
 
--- Add defense for a thesis NONGUCIAN
--- QUESTION: WHAT SHOULD I DO FOR THE GRADE PART
---GO
---	CREATE PROC AddDefenseNonGucian
+-- Add defense for a thesis NONGUCIAN. DONE
 
--- g) Cancel a Thesis if the evaluation of the last progress report is zero.
+GO
+	CREATE PROC AddDefenseNonGucian
+	@ThesisSerialNo INT,
+	@DefenseDate Datetime,
+	@DefenseLocation varchar(15)
+	AS
+	IF (SELECT MIN(grade)
+	FROM NonGUCianStudentRegisterThesis
+		INNER JOIN NonGucianStudentTakeCourse ON NonGUCianStudentRegisterThesis.sid = NonGucianStudentTakeCourse.sid
+	) > 50
+	INSERT INTO DEFENSE (serialNumber ,date , location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
+RETURN
+
+-- g) Cancel a Thesis if the evaluation of the last progress report is zero. QUESTION : HOW WOULD I DELETE FROM A TABLE WHICH IN JOINED WITH ANOTHER?
 GO 
 	CREATE PROC CancelThesis
 	@ThesisSerialNo INT
@@ -218,10 +278,45 @@ GO
 	SELECT Top 1 *
 	FROM Thesis
 		INNER JOIN GUCianProgressReport ON GUCianProgressReport.thesisSerialNumber = Thesis.serialNumber
-	ORDER BY date Desc
+		WHERE @ThesisSerialNo = Thesis.serialNumber
+	ORDER BY date DESC
 RETURN
 
--- i) QUESTION: WHERE IS THE GRADE INPUT, SHOULDNT THE NAME BE ADDGRADE
+
+-- h,f) Add examiner(s) for a defense. QUESTION : ARE H AND F REPEATED OR ARE THEY DIFFERENT SOMEHOW? DONE
+GO
+-- A FUNCTION WHICH RETURNS THE ID OF THE NEW EXAMINER TO BE USED IN THE FOLLOWING PROCEDURE 
+CREATE FUNCTION NewExaminer(
+@ExaminerName varchar(20),
+@National bit, 
+@fieldOfWork varchar(20)
+)
+RETURNS INT
+AS 
+BEGIN
+	Insert INTO Examiner VALUES (@ExaminerName, @National, @fieldOfWork);
+	RETURN (SELECT id
+		FROM Examiner
+		WHERE name = @ExaminerName AND fieldOfWork = @National AND isNational = @fieldOfWork
+	)
+END;
+
+-- PROCEDURE WHICH TAKES INPUTS FOR THE ABOVE FUNCTION TO RETURN THE ID FOR THE NEW EXAMINER NEEDED TO INSERT THE NEWEXAMINER TO THE DEFENSE.
+GO
+CREATE PROC AddExaminer
+@ThesisSerialNo int,
+@DefenseDate Datetime,
+@ExaminerName varchar(20),
+@National bit, 
+@fieldOfWork varchar(20)
+AS
+	SELECT NewExaminer(@ExaminerName, @National, @fieldOfWork) NewExaminerId;
+	Insert INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, NewExaminerId)
+RETURN
+
+
+
+-- i) QUESTION: WHERE IS THE GRADE INPUT, SHOULDNT THE NAME BE ADDGRADE.
 GO 
 	CREATE PROC AddGrade
 	@ThesisSerialNo INT,
@@ -281,4 +376,6 @@ GO
 
 
 --i) Link publication to my thesis.
+
+-- 6
 
