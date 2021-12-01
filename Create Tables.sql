@@ -79,6 +79,14 @@ CREATE TABLE Supervisor(
 	PRIMARY KEY(id)
 );
 
+CREATE TABLE Payment(
+	id INT,
+	amount DECIMAL,
+	no_installments INT,
+	fundPercentage DECIMAL,
+	PRIMARY KEY(id)
+);
+
 CREATE TABLE Thesis(
 	serialNumber INT,
 	field VARCHAR(20),
@@ -89,8 +97,10 @@ CREATE TABLE Thesis(
 	defenseDate DATE,
 	years INT,
 	grade DECIMAL(4,2),
+	payment_id INT,
 	noExtension INT,
-	PRIMARY KEY(serialNumber)
+	PRIMARY KEY(serialNumber),
+	FOREIGN KEY(payment_id) REFERENCES Payment
 );
 
 -- Wagdy Entities
@@ -105,13 +115,6 @@ CREATE TABLE Publication(
 	PRIMARY KEY(id)
 );
 
-CREATE TABLE Payment(
-	id INT,
-	amount DECIMAL,
-	no_installments INT,
-	fundPercentage DECIMAL,
-	PRIMARY KEY(id)
-);
 
 CREATE TABLE Examiner(
 	id INT,

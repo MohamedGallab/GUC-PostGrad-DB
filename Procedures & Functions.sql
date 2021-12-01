@@ -1,7 +1,5 @@
 USE PostGradDB
 
-GO
-
 -- 1
 
 -- 2
@@ -15,7 +13,6 @@ AS
 	SELECT *
 	FROM Supervisor
 RETURN
-GO
 
 -- b) view the profile of any supervisor that contains all his/her information.
 GO
@@ -26,7 +23,6 @@ AS
 	FROM Supervisor
 	WHERE Supervisor.id = @supId
 RETURN
-GO
 
 -- c) List all Theses in the system.
 GO
@@ -35,7 +31,6 @@ AS
 	SELECT *
 	FROM Thesis
 RETURN
-GO
 
 -- d) List the number of on going theses.
 GO
@@ -46,9 +41,9 @@ AS
 	FROM Thesis
 	WHERE Thesis.endDate IS NULL
 RETURN
-GO
 
 -- e) List all supervisors’ names currently supervising students, theses title, student name.
+-- what should the output be exactly
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
@@ -71,36 +66,68 @@ AS
 	WHERE
 		endDate IS NULL
 RETURN
-GO
 
--- c) List all Theses in the system.
+-- f) List nonGucians names, course code, and respective grade.
+-- what do I do with this input ?
 GO
-CREATE PROC AdminViewAllTheses
+CREATE PROC AdminListNonGucianCourse
+@courseID INT
+AS
+	SELECT NonGucianStudent.firstname, NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
+	FROM 
+		NonGucianStudentTakeCourse
+		INNER JOIN NonGucianStudent ON NonGucianStudentTakeCourse.sid = NonGucianStudent.id
+		INNER JOIN Course ON NonGucianStudentTakeCourse.cid = Course.id
+	WHERE 
+		@courseID = Course.id
+RETURN
+
+-- g) Update the number of thesis extension by 1.
+GO
+CREATE PROC AdminUpdateExtension
+@ThesisSerialNo INT
+AS
+	UPDATE Thesis
+	SET Thesis.noExtension = Thesis.noExtension + 1
+	WHERE Thesis.serialNumber = @ThesisSerialNo
+RETURN
+
+-- h) Issue a thesis payment.
+-- CHECK SCOPE IDENTITY & SUCCESS BIT
+GO
+CREATE PROC AdminIssueThesisPayment
+@ThesisSerialNo INT, @amount DECIMAL, @noOfInstallments INT, @fundPercentage DECIMAL,
+@Success BIT OUTPUT
+AS
+	INSERT INTO Payment
+	VALUES (@amount, @noOfInstallments, @fundPercentage);
+	UPDATE Thesis
+	SET Thesis.payment_id = SCOPE_IDENTITY()
+	WHERE Thesis.serialNumber = @ThesisSerialNo;
+	SET @Success = 1;
+RETURN
+
+-- i) view the profile of any student that contains all his/her information.
+GO
+CREATE PROC AdminViewStudentProfile
+@sid INT
 AS
 	SELECT *
-	FROM Thesis
+	FROM(
+		SELECT * 
+		FROM 
+			GUCianStudentRegisterThesis 
+			INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
+		UNION 
+		SELECT * 
+		FROM 
+			NonGUCianStudentRegisterThesis
+			INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
+		)
+		AS allStudents
+	WHERE
+		allStudents.sid = @sid
 RETURN
-GO
-
--- c) List all Theses in the system.
-GO
-CREATE PROC AdminViewAllTheses
-AS
-	SELECT *
-	FROM Thesis
-RETURN
-GO
-
--- c) List all Theses in the system.
-GO
-CREATE PROC AdminViewAllTheses
-AS
-	SELECT *
-	FROM Thesis
-RETURN
-GO
-
-
 
 
 
