@@ -180,7 +180,7 @@ GO
 CREATE PROC linkCourseStudent
 @courseID INT, @studentID INT
 AS
-	INSERT INTO NonGucianStudentTakeCourse VALUES (@studentID, @courseID)
+	INSERT INTO NonGucianStudentTakeCourse (sid, cid) VALUES (@studentID, @courseID)
 RETURN
 
 -- GRADE DECIMAL ????
