@@ -130,21 +130,77 @@ AS
 RETURN
 
 -- j) Issue installments as per the number of installments for a certain payment every six months starting from the entered date.
-GO
-
-
+--  amount, done FROM WHERE ????
 GO
 CREATE PROC AdminIssueInstallPayment
 @paymentID INT, @InstallStartDate DATE
 AS
 	DECLARE @i INT = 0;
+	DECLARE @InstallmentDate DATE = @InstallStartDate;
 	DECLARE @no_installments INT = 
 		(SELECT Payment.no_installments
 		FROM Payment
 		WHERE Payment.id = @paymentID)
 
 	WHILE @i < @no_installments
+		INSERT INTO Installment(date, paymentId)
+		VALUES (@InstallmentDate, @paymentID);
+		SET @InstallmentDate = DATEADD(month, 6, @InstallmentDate);
 		SET @i = @i + 1;
+RETURN
+
+-- k) List the title(s) of accepted publication(s) per thesis.
+-- CHECK THE GROUP BY AND BIT CHECK
+GO
+CREATE PROC AdminListAcceptPublication
+AS
+	SELECT Thesis.title, Publication.title
+	FROM
+		ThesisHasPublication
+		INNER JOIN Thesis ON ThesisHasPublication.serialNo = Thesis.serialNumber
+		INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
+	WHERE
+		Publication.accepted = 1
+	GROUP BY Thesis.title, Publication.title
+RETURN
+
+-- l) Add courses and link courses to students.
+
+-- DECIMAL PARAMETERS ????
+GO
+CREATE PROC AddCourse
+@courseCode VARCHAR(10), @creditHrs INT, @fees DECIMAL
+AS
+	INSERT INTO Course VALUES (@fees, @creditHrs, @courseCode)
+RETURN
+
+
+-- NonGucianStudentPayForCourse ??????
+GO
+CREATE PROC linkCourseStudent
+@courseID INT, @studentID INT
+AS
+	INSERT INTO NonGucianStudentTakeCourse VALUES (@studentID, @courseID)
+RETURN
+
+-- GRADE DECIMAL ????
+GO
+CREATE PROC addStudentCourseGrade
+@courseID INT, @studentID INT, @grade DECIMAL
+AS
+	UPDATE NonGucianStudentTakeCourse
+	SET grade = @grade
+	WHERE cid = @courseID AND sid = @studentID
+RETURN
+
+-- m) View examiners and supervisor(s) names attending a thesis defense taking place on a certain date.
+
+-- HOW TO GET SUPEVISOR ???
+GO
+CREATE PROC ViewExamSupDefense
+@defenseDate datetime
+AS
+	
 RETURN
 
 -- 4
@@ -294,9 +350,8 @@ GO
 RETURN
 
 
--- h,f) Add examiner(s) for a defense. QUESTION : ARE H AND F REPEATED OR ARE THEY DIFFERENT SOMEHOW? DONE
+-- A PROCEDURE WHICH RETURNS THE ID OF THE NEW EXAMINER TO BE USED IN THE FOLLOWING PROCEDURE
 GO
--- A FUNCTION WHICH RETURNS THE ID OF THE NEW EXAMINER TO BE USED IN THE FOLLOWING PROCEDURE 
 CREATE PROC NewExaminer(
 @ExaminerName varchar(20),
 @National bit, 
@@ -311,6 +366,7 @@ AS
 	
 RETURN
 
+-- h,f) Add examiner(s) for a defense. QUESTION : ARE H AND F REPEATED OR ARE THEY DIFFERENT SOMEHOW? DONE
 -- PROCEDURE WHICH TAKES INPUTS FOR THE ABOVE FUNCTION TO RETURN THE ID FOR THE NEW EXAMINER NEEDED TO INSERT THE NEWEXAMINER TO THE DEFENSE.
 GO
 CREATE PROC AddExaminer
