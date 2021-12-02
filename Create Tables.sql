@@ -80,7 +80,7 @@ CREATE TABLE Supervisor(
 );
 
 CREATE TABLE Payment(
-	id INT,
+	id INT IDENTITY,
 	amount DECIMAL,
 	no_installments INT,
 	fundPercentage DECIMAL,
@@ -88,7 +88,7 @@ CREATE TABLE Payment(
 );
 
 CREATE TABLE Thesis(
-	serialNumber INT,
+	serialNumber INT IDENTITY,
 	field VARCHAR(20),
 	type VARCHAR(10),
 	title VARCHAR(50),
@@ -106,7 +106,7 @@ CREATE TABLE Thesis(
 -- Wagdy Entities
 
 CREATE TABLE Publication(
-	id INT,
+	id INT IDENTITY,
 	title VARCHAR(50),
 	pubDate DATE,
 	place VARCHAR(50),
@@ -117,7 +117,7 @@ CREATE TABLE Publication(
 
 
 CREATE TABLE Examiner(
-	id INT,
+	id INT IDENTITY,
 	name VARCHAR(20),
 	email VARCHAR(50),
 	password VARCHAR(20),
@@ -127,7 +127,7 @@ CREATE TABLE Examiner(
 );
 
 CREATE TABLE Defense(
-	serialNumber int,
+	serialNumber INT,
 	date DATE,
 	location VARCHAR(15),
 	grade DECIMAL,
@@ -173,7 +173,7 @@ CREATE TABLE Installment(
     date DATETIME,
     paymentId INT,
     amount DECIMAL(7,2),
-    done bit,
+    done BIT,
 
     PRIMARY KEY(date,paymentId),
 

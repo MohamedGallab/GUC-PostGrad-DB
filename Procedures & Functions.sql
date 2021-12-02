@@ -148,10 +148,10 @@ GO
 	AS
 		UPDATE GucianProgressReport
 		SET GUCianProgressReport.eval = @evaluation
-		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no
+		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no;
 		UPDATE NonGUCianProgressReport
 		SET NonGUCianProgressReport.eval = @evaluation
-		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no
+		WHERE  NonGUCianProgressReport.supid = @supervisorid AND @thesisserialno = NonGUCianProgressReport.thesisserialnumber and @progressreportno = NonGUCianProgressReport.no
 
 RETURN
 
@@ -185,17 +185,17 @@ CREATE PROC ViewSupStudentsYears
 @supervisorID INT
 AS
 	SELECT AllStudents.firstname, AllStudents.lastname, AllStudents.years
-	from
+	FROM
 	(
-	SELECT * 
+	SELECT GucianStudent.firstname, GucianStudent.lastname, Thesis.years
 	FROM GUCianStudentRegisterThesis
-		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.sid
+		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
 		INNER JOIN Thesis ON GUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
 	WHERE GUCianStudentRegisterThesis.supid = @supervisorID
 	UNION
-	SELECT * 
+	SELECT NonGucianStudent.firstname, NonGucianStudent.lastname, Thesis.years
 	FROM NonGUCianStudentRegisterThesis
-		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.sid
+		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
 		INNER JOIN Thesis ON NonGUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
 	WHERE NonGUCianStudentRegisterThesis.supid = @supervisorID
 	)
@@ -286,32 +286,32 @@ RETURN
 -- h,f) Add examiner(s) for a defense. QUESTION : ARE H AND F REPEATED OR ARE THEY DIFFERENT SOMEHOW? DONE
 GO
 -- A FUNCTION WHICH RETURNS THE ID OF THE NEW EXAMINER TO BE USED IN THE FOLLOWING PROCEDURE 
-CREATE FUNCTION NewExaminer(
+CREATE PROC NewExaminer(
 @ExaminerName varchar(20),
 @National bit, 
 @fieldOfWork varchar(20)
 )
-RETURNS INT
-AS 
-BEGIN
-	Insert INTO Examiner VALUES (@ExaminerName, @National, @fieldOfWork);
-	RETURN (SELECT id
-		FROM Examiner
-		WHERE name = @ExaminerName AND fieldOfWork = @National AND isNational = @fieldOfWork
-	)
-END;
+
+AS
+	Insert INTO Examiner (name, isNational, fieldOfWork) VALUES (@ExaminerName, @National, @fieldOfWork);
+	SELECT id
+	FROM Examiner
+	WHERE name = @ExaminerName AND fieldOfWork = @National AND isNational = @fieldOfWork
+	
+RETURN
 
 -- PROCEDURE WHICH TAKES INPUTS FOR THE ABOVE FUNCTION TO RETURN THE ID FOR THE NEW EXAMINER NEEDED TO INSERT THE NEWEXAMINER TO THE DEFENSE.
 GO
 CREATE PROC AddExaminer
-@ThesisSerialNo int,
+@ThesisSerialNo INT,
 @DefenseDate Datetime,
 @ExaminerName varchar(20),
-@National bit, 
+@National BIT, 
 @fieldOfWork varchar(20)
 AS
-	SELECT NewExaminer(@ExaminerName, @National, @fieldOfWork) NewExaminerId;
-	Insert INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, NewExaminerId)
+	DECLARE @NewExaminerId INT;
+	EXEC NewExaminer @ExaminerName, @National, @fieldOfWork, @NewExaminerId ;	
+	Insert INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, @NewExaminerId)
 RETURN
 
 
@@ -330,16 +330,6 @@ RETURN
 -- 5
 
 -- 6
-CREATE VIEW allStudents AS
-SELECT * 
-FROM GucianStudent
--- a) View my profile that contains all my information.
-GO
-	CREATE PROC viewMyProfile
-	@studentId int
-	AS
-	SELECT*
-	FROM 
 
 -- b) Edit my profile (change any of my personal information).
 
