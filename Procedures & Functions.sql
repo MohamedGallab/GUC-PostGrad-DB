@@ -129,12 +129,23 @@ AS
 		allStudents.sid = @sid
 RETURN
 
+-- j) Issue installments as per the number of installments for a certain payment every six months starting from the entered date.
+GO
 
 
+GO
+CREATE PROC AdminIssueInstallPayment
+@paymentID INT, @InstallStartDate DATE
+AS
+	DECLARE @i INT = 0;
+	DECLARE @no_installments INT = 
+		(SELECT Payment.no_installments
+		FROM Payment
+		WHERE Payment.id = @paymentID)
 
-
-
-
+	WHILE @i < @no_installments
+		SET @i = @i + 1;
+RETURN
 
 -- 4
 
