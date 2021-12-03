@@ -11,6 +11,7 @@ CREATE TABLE Student(
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
 	email VARCHAR(50),
+	password VARCHAR(30),
 	type VARCHAR(20), 
 	faculty VARCHAR(20),
 	address VARCHAR(20),
@@ -23,6 +24,7 @@ CREATE TABLE GucianStudent(
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
 	email VARCHAR(50),
+	password VARCHAR(30),
 	type VARCHAR(20), 
 	faculty VARCHAR(20),
 	address VARCHAR(20),
@@ -36,6 +38,7 @@ CREATE TABLE NonGucianStudent(
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
 	email VARCHAR(50),
+	password VARCHAR(30),
 	type VARCHAR(20), 
 	faculty VARCHAR(20),
 	address VARCHAR(20),
@@ -73,9 +76,10 @@ CREATE TABLE Supervisor(
 	id INT IDENTITY, 
 	first_name VARCHAR(20),
 	last_name VARCHAR(20),
+	password VARCHAR(20),
 	email VARCHAR(50),
 	faculty VARCHAR(20),
-	--address VARCHAR(10),
+	address VARCHAR(10),
 	PRIMARY KEY(id)
 );
 
@@ -128,7 +132,7 @@ CREATE TABLE Examiner(
 
 CREATE TABLE Defense(
 	serialNumber INT,
-	date DATE,
+	date DATETIME,
 	location VARCHAR(15),
 	grade DECIMAL,
 	PRIMARY KEY(serialNumber,date),

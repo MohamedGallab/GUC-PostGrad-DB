@@ -1,8 +1,105 @@
 USE PostGradDB
 
--- 1
+-- 1 As an unregistered user I should be able to:
+-- Register to the website by using my name (First and last name), password, faculty, email, and address.
+
+--student
+GO
+CREATE PROC StudentRegister
+@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@Gucian BIT,@email VARCHAR(50),@address VARCHAR(10)
+AS
+	IF (@Gucian = 1)
+	BEGIN
+		-- if gucian insert into table gucian
+		INSERT INTO Gucian (firstname,lastname,faculty,type,password,email,address) VALUES (@first_name, @last_name, @faculty, 'Gucian',@password,@email,@address)
+	END
+
+	ELSE
+		--else insert into table nongucian
+	BEGIN
+		INSERT INTO NonGucianStudent (firstname,lastname,faculty,type,email,address) VALUES (@first_name, @last_name, @faculty, 'Non Gucian',@password,@email,@address)
+	END	
+RETURN
+
+--supervisor
+GO
+CREATE PROC SupervisorRegister
+@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50),@address VARCHAR(10)
+AS
+		INSERT INTO Supervisor (firstname,lastname,faculty,password,email,address) VALUES (@first_name, @last_name, @faculty, @password,@email,@address)
+RETURN
 
 -- 2
+	--a) login using my username and password.
+GO
+CREATE PROC userLogin
+@ID INT,@password VARCHAR(20), @Success BIT OUTPUT, @Type INT OUTPUT
+AS
+	SET @Success  = 0;
+	SET @Type  = 0;
+
+	--gucian type = 1 
+	IF(EXISTS (SELECT *
+			  FROM Gucian
+			  WHERE Gucian.ID=@ID AND Gucian.Password=@password ))
+	BEGIN
+	SET @Success=1;
+	SET @Type=1;
+	END
+
+	--non gucian type = 2
+	ELSE
+	BEGIN
+	IF(EXISTS (SELECT *
+			  FROM NonGucian
+			  WHERE NonGucian.ID=@ID AND NonGucian.Password=@password ))
+	BEGIN
+	SET @Success=1;
+	SET @Type=2;
+	END
+	
+	ELSE
+	BEGIN
+	--supervisor type = 3
+	IF(EXISTS (SELECT *
+			  FROM Supervisor
+			  WHERE Supervisor.ID=@ID AND Supervisor.Password=@password ))
+	BEGIN
+	SET @Success=1;
+	SET @Type=3;
+	END
+	END
+	END
+
+RETURN 
+
+	-- b) add my mobile number(s).
+GO
+CREATE PROC addMobile
+@ID INT,@mobile_number VARCHAR(20)
+AS
+	--gucian 
+	IF(EXISTS (SELECT *
+			  FROM Gucian
+			  WHERE Gucian.ID=@ID))
+	BEGIN
+	INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+	END
+
+	--non gucian type = 2
+	ELSE
+	BEGIN
+	IF(EXISTS (SELECT *
+			  FROM NonGucian
+			  WHERE NonGucian.ID=@ID))
+	BEGIN
+	INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+	END	
+	END
+
+RETURN 
+
+
 
 -- 3
 
@@ -395,6 +492,32 @@ GO
 RETURN
 
 -- 5
+--a) Add grade for a defense.
+
+GO 
+	CREATE PROC AddDefenseGrade
+	@ThesisSerialNo INT,
+	@DefenseDate DATETIME,
+	@grade DECIMAL(4,2)
+	AS
+	UPDATE DEFENSE
+	SET grade = @grade
+	WHERE serialNumber = @ThesisSerialNo AND date = @DefenseDate
+RETURN
+
+--b) Add grade for a defense. --me no understand what this mean!
+
+GO 
+	CREATE PROC AddCommentsGrade
+	@ThesisSerialNo INT,
+	@DefenseDate DATETIME,
+	@comments VARCHAR(300)
+	AS
+	UPDATE DEFENSE
+	SET grade = @grade
+	WHERE serialNumber = @ThesisSerialNo AND date = @DefenseDate
+RETURN
+
 
 -- 6
 
