@@ -20,31 +20,28 @@ CREATE TABLE Admin(
 -- Yousef Entities
 
 CREATE TABLE GucianStudent(
-	id INT identity, 
+	id INT, 
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
-	email VARCHAR(50),
-	password VARCHAR(30),
 	type VARCHAR(20), 
 	faculty VARCHAR(20),
 	address VARCHAR(20),
 	gpa DECIMAL(4,2),
 	underGradId INT,
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE NonGucianStudent(
-	id INT identity, 
+	id INT, 
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
-	email VARCHAR(50),
-	password VARCHAR(30),
 	type VARCHAR(20), 
 	faculty VARCHAR(20),
 	address VARCHAR(20),
 	gpa DECIMAL(4,2),
-	underGradId INT,
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE GUCStudentPhoneNumber(
@@ -183,7 +180,7 @@ CREATE TABLE Installment(
 	FOREIGN KEY(paymentId) REFERENCES Payment
 );
 
--- Moataz Relations
+-- Yousef Relations
 
 CREATE TABLE NonGucianStudentPayForCourse(
 	sid INT, 
