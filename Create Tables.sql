@@ -86,7 +86,7 @@ CREATE TABLE Payment(
 	id INT IDENTITY,
 	amount DECIMAL,
 	no_installments INT,
-	fundPercentage DECIMAL,
+	fundPercentage DECIMAL(5,2),
 	PRIMARY KEY(id)
 );
 
@@ -111,7 +111,7 @@ CREATE TABLE Thesis(
 CREATE TABLE Publication(
 	id INT IDENTITY,
 	title VARCHAR(50),
-	pubDate DATE,
+	date DATE,
 	place VARCHAR(50),
 	accepted BIT,
 	host VARCHAR(50),
@@ -122,18 +122,17 @@ CREATE TABLE Publication(
 CREATE TABLE Examiner(
 	id INT IDENTITY,
 	name VARCHAR(20),
-	email VARCHAR(50),
-	password VARCHAR(20),
 	fieldOfWork VARCHAR(20),
 	isNational BIT,
-	PRIMARY KEY(id)
+	PRIMARY KEY(id),
+	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Defense(
 	serialNumber INT,
 	date DATETIME,
 	location VARCHAR(15),
-	grade DECIMAL,
+	grade DECIMAL(5,2),
 	PRIMARY KEY(serialNumber,date),
 	FOREIGN KEY(serialNumber) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
 );
