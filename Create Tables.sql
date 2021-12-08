@@ -100,7 +100,7 @@ CREATE TABLE Thesis(
 	payment_id INT,
 	noExtension INT,
 	PRIMARY KEY(serialNumber),
-	FOREIGN KEY(payment_id) REFERENCES Payment
+	FOREIGN KEY(payment_id) REFERENCES Payment ON UPDATE CASCADE
 );
 
 -- Wagdy Entities
@@ -117,7 +117,7 @@ CREATE TABLE Publication(
 
 
 CREATE TABLE Examiner(
-	id INT IDENTITY,
+	id INT,
 	name VARCHAR(20),
 	fieldOfWork VARCHAR(20),
 	isNational BIT,
@@ -176,7 +176,7 @@ CREATE TABLE Installment(
 
 	PRIMARY KEY(date,paymentId),
 
-	FOREIGN KEY(paymentId) REFERENCES Payment
+	FOREIGN KEY(paymentId) REFERENCES Payment ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Yousef Relations
@@ -186,9 +186,9 @@ CREATE TABLE NonGucianStudentPayForCourse(
 	paymentNo INT,
 	cid INT,
 	PRIMARY KEY(sid, paymentNo, cid),
-	FOREIGN KEY(sid) REFERENCES NonGucianStudent ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(paymentNo) REFERENCES Payment ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(cid) REFERENCES Course ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY(sid) REFERENCES NonGucianStudent,
+	FOREIGN KEY(paymentNo) REFERENCES Payment,
+	FOREIGN KEY(cid) REFERENCES Course
 );
 
 CREATE TABLE NonGucianStudentTakeCourse(
@@ -207,9 +207,9 @@ CREATE TABLE GUCianStudentRegisterThesis(
 	supid INT,
 	serial_no INT,
 	PRIMARY KEY(sid, supid, serial_no),
-	FOREIGN KEY(sid) REFERENCES GucianStudent ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(supid) REFERENCES Supervisor ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(serial_no) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY(sid) REFERENCES GucianStudent,
+	FOREIGN KEY(supid) REFERENCES Supervisor,
+	FOREIGN KEY(serial_no) REFERENCES Thesis
 );
 
 CREATE TABLE NonGUCianStudentRegisterThesis(
@@ -217,9 +217,9 @@ CREATE TABLE NonGUCianStudentRegisterThesis(
 	supid INT,
 	serial_no INT,
 	PRIMARY KEY(sid, supid, serial_no),
-	FOREIGN KEY(sid) REFERENCES NonGucianStudent ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(supid) REFERENCES Supervisor ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY(serial_no) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY(sid) REFERENCES NonGucianStudent,
+	FOREIGN KEY(supid) REFERENCES Supervisor,
+	FOREIGN KEY(serial_no) REFERENCES Thesis
 );
 
 -- Wagdy Relations
@@ -239,8 +239,8 @@ CREATE TABLE ThesisHasPublication (
 	serialNo INT,
 	pubid INT,
 
-	FOREIGN KEY(serialNo) REFERENCES Thesis,
-	FOREIGN KEY(pubid) REFERENCES Publication,
+	FOREIGN KEY(serialNo) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY(pubid) REFERENCES Publication ON DELETE CASCADE ON UPDATE CASCADE,
 
 	PRIMARY KEY(serialNo,pubid)
 );
