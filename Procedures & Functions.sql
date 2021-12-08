@@ -1,9 +1,10 @@
 USE PostGradDB
 
--- 1 As an unregistered user I should be able to:
--- Register to the website by using my name (First and last name), password, faculty, email, and address.
+-- 1
 
---student
+-- a) Register to the website by using my name (First and last name), password, faculty, email, and address.
+
+	-- student
 GO
 CREATE PROC StudentRegister
 @first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@Gucian BIT,@email VARCHAR(50),@address VARCHAR(10)
@@ -21,16 +22,18 @@ AS
 	END	
 RETURN
 
---supervisor
+	-- supervisor
 GO
 CREATE PROC SupervisorRegister
 @first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50),@address VARCHAR(10)
 AS
-		INSERT INTO Supervisor (firstname,lastname,faculty,password,email,address) VALUES (@first_name, @last_name, @faculty, @password,@email,@address)
+	INSERT INTO Supervisor (firstname,lastname,faculty,password,email,address) VALUES (@first_name, @last_name, @faculty, @password,@email,@address)
 RETURN
 
 -- 2
-	--a) login using my username and password.
+
+-- a) login using my username and password.
+
 GO
 CREATE PROC userLogin
 @ID INT,@password VARCHAR(20), @Success BIT OUTPUT, @Type INT OUTPUT
@@ -39,41 +42,45 @@ AS
 	SET @Type  = 0;
 
 	--gucian type = 1 
-	IF(EXISTS (SELECT *
-			  FROM Gucian
-			  WHERE Gucian.ID=@ID AND Gucian.Password=@password ))
+	IF(
+		EXISTS	(
+				SELECT *
+				FROM Gucian
+				WHERE Gucian.ID=@ID AND Gucian.Password=@password
+				)
+	)
 	BEGIN
-	SET @Success=1;
-	SET @Type=1;
+		SET @Success=1;
+		SET @Type=1;
 	END
 
 	--non gucian type = 2
 	ELSE
 	BEGIN
-	IF(EXISTS (SELECT *
-			  FROM NonGucian
-			  WHERE NonGucian.ID=@ID AND NonGucian.Password=@password ))
-	BEGIN
-	SET @Success=1;
-	SET @Type=2;
-	END
+		IF(EXISTS (SELECT *
+				  FROM NonGucian
+				  WHERE NonGucian.ID=@ID AND NonGucian.Password=@password ))
+		BEGIN
+			SET @Success=1;
+			SET @Type=2;
+		END
 	
-	ELSE
-	BEGIN
-	--supervisor type = 3
-	IF(EXISTS (SELECT *
-			  FROM Supervisor
-			  WHERE Supervisor.ID=@ID AND Supervisor.Password=@password ))
-	BEGIN
-	SET @Success=1;
-	SET @Type=3;
-	END
-	END
+		ELSE
+		BEGIN
+			--supervisor type = 3
+			IF(EXISTS (SELECT *
+					  FROM Supervisor
+					  WHERE Supervisor.ID=@ID AND Supervisor.Password=@password ))
+			BEGIN
+				SET @Success=1;
+				SET @Type=3;
+			END
+		END
 	END
 
 RETURN 
 
-	-- b) add my mobile number(s).
+-- b) add my mobile number(s).
 GO
 CREATE PROC addMobile
 @ID INT,@mobile_number VARCHAR(20)
@@ -83,18 +90,18 @@ AS
 			  FROM Gucian
 			  WHERE Gucian.ID=@ID))
 	BEGIN
-	INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+		INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
 	END
 
 	--non gucian type = 2
 	ELSE
 	BEGIN
-	IF(EXISTS (SELECT *
-			  FROM NonGucian
-			  WHERE NonGucian.ID=@ID))
-	BEGIN
-	INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID,@mobile_number);
-	END	
+		IF(EXISTS (SELECT *
+				  FROM NonGucian
+				  WHERE NonGucian.ID=@ID))
+		BEGIN
+			INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+		END
 	END
 
 RETURN 
@@ -492,7 +499,7 @@ GO
 RETURN
 
 -- 5
---a) Add grade for a defense.
+-- a) Add grade for a defense.
 
 GO 
 	CREATE PROC AddDefenseGrade
@@ -505,7 +512,7 @@ GO
 	WHERE serialNumber = @ThesisSerialNo AND date = @DefenseDate
 RETURN
 
---b) Add grade for a defense. --me no understand what this mean!
+-- b) Add grade for a defense. -- me no understand what this mean! -- check new users stories bud (Gallab)
 
 GO 
 	CREATE PROC AddCommentsGrade
@@ -524,38 +531,35 @@ RETURN
 -- b) Edit my profile (change any of my personal information).
 
 
---c) As a Gucian graduate, add my undergarduate ID.
+-- c) As a Gucian graduate, add my undergarduate ID.
 
 
 
 
---d) As a nonGucian student, view my courses’ grades
+-- d) As a nonGucian student, view my courses’ grades
 
 
 
---e) View all my payments and installments.
---e-i)
---e-ii)
---e-iii)
---e-iv)
+-- e) View all my payments and installments.
+-- e-i)
+-- e-ii)
+-- e-iii)
+-- e-iv)
 
 
---f) Add and fill my progress report(s).
---f-i)
---f-ii)
-
-
-
---g) View my progress report(s) evaluations.
+-- f) Add and fill my progress report(s).
+-- f-i)
+-- f-ii)
 
 
 
-
---h) Add publication.
-
+-- g) View my progress report(s) evaluations.
 
 
---i) Link publication to my thesis.
 
--- 6
 
+-- h) Add publication.
+
+
+
+-- i) Link publication to my thesis.
