@@ -5,7 +5,7 @@ GO
 USE PostGradDB;
 
 CREATE TABLE PostGradUser(
-	id INT identity,
+	id INT IDENTITY,
 	email VARCHAR(50),
 	password VARCHAR(20),
 	PRIMARY KEY(id)
@@ -23,11 +23,11 @@ CREATE TABLE GucianStudent(
 	id INT, 
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
-	type VARCHAR(20), 
+	type VARCHAR(20), -- type ?
 	faculty VARCHAR(20),
-	address VARCHAR(20),
-	gpa DECIMAL(4,2),
-	underGradId INT,
+	address VARCHAR(50),
+	GPA DECIMAL(4,2), -- type ?
+	undergradID INT,
 	PRIMARY KEY(id),
 	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -36,10 +36,10 @@ CREATE TABLE NonGucianStudent(
 	id INT, 
 	firstname VARCHAR(20),
 	lastname VARCHAR(20),
-	type VARCHAR(20), 
+	type VARCHAR(20), -- type ?
 	faculty VARCHAR(20),
-	address VARCHAR(20),
-	gpa DECIMAL(4,2),
+	address VARCHAR(50),
+	GPA DECIMAL(4,2), -- type ?
 	PRIMARY KEY(id),
 	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -62,9 +62,9 @@ CREATE TABLE NonGUCStudentPhoneNumber(
 
 CREATE TABLE Course(
 	id INT IDENTITY, 
-	fees DECIMAL(8,2),
+	fees DECIMAL(8,2), -- type ?
 	creditHours INT,
-	code VARCHAR(10),
+	courseCode VARCHAR(10), -- code instead ?
 	PRIMARY KEY(id)
 );
 
@@ -81,7 +81,7 @@ CREATE TABLE Supervisor(
 
 CREATE TABLE Payment(
 	id INT IDENTITY,
-	amount DECIMAL,
+	amount DECIMAL(8,2), -- type ?
 	no_installments INT,
 	fundPercentage DECIMAL(5,2),
 	PRIMARY KEY(id)
@@ -89,14 +89,14 @@ CREATE TABLE Payment(
 
 CREATE TABLE Thesis(
 	serialNumber INT IDENTITY,
-	field VARCHAR(20),
-	type VARCHAR(10),
-	title VARCHAR(50),
+	field VARCHAR(20), -- type ?
+	type VARCHAR(10), -- type ?
+	title VARCHAR(50), -- type ?
 	startDate DATE,
 	endDate DATE,
-	defenseDate DATE,
+	defenseDate DATETIME,
 	years AS (YEAR(endDate) - YEAR(startDate)),
-	grade DECIMAL(4,2),
+	grade DECIMAL(5,2),
 	payment_id INT,
 	noExtension INT,
 	PRIMARY KEY(serialNumber),
@@ -108,7 +108,7 @@ CREATE TABLE Thesis(
 CREATE TABLE Publication(
 	id INT IDENTITY,
 	title VARCHAR(50),
-	date DATE,
+	date DATETIME,
 	place VARCHAR(50),
 	accepted BIT,
 	host VARCHAR(50),
@@ -129,7 +129,7 @@ CREATE TABLE Defense(
 	serialNumber INT,
 	date DATETIME,
 	location VARCHAR(15),
-	grade DECIMAL(5,2),
+	grade DECIMAL(5,2), -- type ?
 	PRIMARY KEY(serialNumber,date),
 	FOREIGN KEY(serialNumber) REFERENCES Thesis ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -140,38 +140,38 @@ CREATE TABLE GUCianProgressReport(
 	sid INT,
 	no INT IDENTITY,
 	date DATE,
-	eval VARCHAR(50), --evaluation type is unclear idk if it's numeric or a comment or wtf i
-	state DECIMAL(5,2),
+	eval INT,
+	state INT,
 	thesisSerialNumber INT,
 	supid INT,
 
 	PRIMARY KEY(sid,no),
 
-	FOREIGN KEY(supid) REFERENCES Supervisor,
+	FOREIGN KEY(sid) REFERENCES GucianStudent,
 	FOREIGN KEY(thesisSerialNumber) REFERENCES Thesis,
-	FOREIGN KEY(sid) REFERENCES GucianStudent
+	FOREIGN KEY(supid) REFERENCES Supervisor
 );
 
 CREATE TABLE NonGUCianProgressReport(
 	sid INT,
 	no INT IDENTITY,
 	date DATE,
-	eval VARCHAR(50), --evaluation type is unclear idk if it's numeric or a comment or wtf i
-	state DECIMAL(5,2),
+	eval INT,
+	state INT,
 	thesisSerialNumber INT,
 	supid INT,
 
 	PRIMARY KEY(sid,no),
 
-	FOREIGN KEY(supid) REFERENCES Supervisor,
+	FOREIGN KEY(sid) REFERENCES NonGucianStudent,
 	FOREIGN KEY(thesisSerialNumber) REFERENCES Thesis,
-	FOREIGN KEY(sid) REFERENCES NonGucianStudent
+	FOREIGN KEY(supid) REFERENCES Supervisor
 );
 
 CREATE TABLE Installment(
-	date DATETIME,
+	date DATE,
 	paymentId INT,
-	amount DECIMAL(7,2),
+	amount DECIMAL(8,2), -- type ?
 	done BIT,
 
 	PRIMARY KEY(date,paymentId),
@@ -194,7 +194,7 @@ CREATE TABLE NonGucianStudentPayForCourse(
 CREATE TABLE NonGucianStudentTakeCourse(
 	sid INT, 
 	cid INT, 
-	grade DECIMAL(4,2),
+	grade DECIMAL(5,2), -- type ?
 	PRIMARY KEY(sid, cid),
 	FOREIGN KEY(sid) REFERENCES NonGucianStudent ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY(cid) REFERENCES Course ON DELETE CASCADE ON UPDATE CASCADE
@@ -225,7 +225,7 @@ CREATE TABLE NonGUCianStudentRegisterThesis(
 -- Wagdy Relations
 
 CREATE TABLE ExaminerEvaluateDefense(
-	date DATE,
+	date DATETIME,
 	serialNo INT,
 	examinerId INT,
 	comment VARCHAR(300),
@@ -243,5 +243,4 @@ CREATE TABLE ThesisHasPublication (
 	FOREIGN KEY(pubid) REFERENCES Publication,
 
 	PRIMARY KEY(serialNo,pubid)
-
 );
