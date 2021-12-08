@@ -4,7 +4,7 @@ USE PostGradDB
 
 -- a) Register to the website by using my name (First and last name), password, faculty, email, and address.
 
-	-- student
+	-- i) student
 GO
 CREATE PROC StudentRegister
 @first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@Gucian BIT,@email VARCHAR(50),@address VARCHAR(10)
@@ -22,7 +22,7 @@ AS
 	END	
 RETURN
 
-	-- supervisor
+	-- ii) supervisor
 GO
 CREATE PROC SupervisorRegister
 @first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50),@address VARCHAR(10)
@@ -541,15 +541,15 @@ RETURN
 
 
 -- e) View all my payments and installments.
--- e-i)
--- e-ii)
--- e-iii)
--- e-iv)
+	-- i)
+	-- ii)
+	-- iii)
+	-- iv)
 
 
 -- f) Add and fill my progress report(s).
--- f-i)
--- f-ii)
+	-- i)
+	-- ii)
 
 
 
