@@ -1,6 +1,7 @@
 USE PostGradDB
--- Custome Procedures & Functions & Views
 
+
+-- Custom Procedures & Functions & Views
 
 -- 1
 
@@ -426,10 +427,13 @@ RETURN
 GO
 	CREATE PROC AddDefenseGucian
 	@ThesisSerialNo INT,
-	@DefenseDate Datetime, 
-	@DefenseLocation varchar(15)
+	@DefenseDate DATETIME, 
+	@DefenseLocation VARCHAR(15)
 	AS
-	INSERT INTO DEFENSE (serialNumber ,date , location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
+	INSERT INTO DEFENSE (serialNumber, date, location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
+	UPDATE Thesis
+	SET defenseDate = @DefenseDate
+	WHERE THESIS.serialNumber = @ThesisSerialNo
 RETURN
 
 -- Add defense for a thesis NONGUCIAN. DONE
@@ -437,14 +441,14 @@ RETURN
 GO
 	CREATE PROC AddDefenseNonGucian
 	@ThesisSerialNo INT,
-	@DefenseDate Datetime,
-	@DefenseLocation varchar(15)
+	@DefenseDate DATETIME,
+	@DefenseLocation VARCHAR(15)
 	AS
-	IF (SELECT MIN(grade)
-	FROM NonGUCianStudentRegisterThesis
-		INNER JOIN NonGucianStudentTakeCourse ON NonGUCianStudentRegisterThesis.sid = NonGucianStudentTakeCourse.sid
-	) > 50
-	INSERT INTO DEFENSE (serialNumber ,date , location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
+		IF (SELECT MIN(grade)
+		FROM NonGUCianStudentRegisterThesis
+			INNER JOIN NonGucianStudentTakeCourse ON NonGUCianStudentRegisterThesis.sid = NonGucianStudentTakeCourse.sid
+		) > 50
+		INSERT INTO DEFENSE (serialNumber, date, location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
 RETURN
 
 -- g) Cancel a Thesis if the evaluation of the last progress report is zero. QUESTION : HOW WOULD I DELETE FROM A TABLE WHICH IN JOINED WITH ANOTHER?
@@ -459,41 +463,25 @@ GO
 	ORDER BY date DESC
 RETURN
 
+-- f) Add examiner(s) for a defense.
 
--- A PROCEDURE WHICH RETURNS THE ID OF THE NEW EXAMINER TO BE USED IN THE FOLLOWING PROCEDURE
-GO
-CREATE PROC NewExaminer(
-@ExaminerName varchar(20),
-@National bit, 
-@fieldOfWork varchar(20)
-)
 
-AS
-	Insert INTO Examiner (name, isNational, fieldOfWork) VALUES (@ExaminerName, @National, @fieldOfWork);
-	SELECT id
-	FROM Examiner
-	WHERE name = @ExaminerName AND fieldOfWork = @National AND isNational = @fieldOfWork
-	
-RETURN
-
--- h,f) Add examiner(s) for a defense. QUESTION : ARE H AND F REPEATED OR ARE THEY DIFFERENT SOMEHOW? DONE
 -- PROCEDURE WHICH TAKES INPUTS FOR THE ABOVE FUNCTION TO RETURN THE ID FOR THE NEW EXAMINER NEEDED TO INSERT THE NEWEXAMINER TO THE DEFENSE.
 GO
 CREATE PROC AddExaminer
-@ThesisSerialNo INT,
-@DefenseDate Datetime,
-@ExaminerName varchar(20),
-@National BIT, 
-@fieldOfWork varchar(20)
-AS
-	DECLARE @NewExaminerId INT;
-	EXEC NewExaminer @ExaminerName, @National, @fieldOfWork, @NewExaminerId ;	
-	Insert INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, @NewExaminerId)
+	@ThesisSerialNo INT,
+	@DefenseDate DATETIME,
+	@ExaminerName VARCHAR(20),
+	@National BIT, 
+	@fieldOfWork VARCHAR(20)
+	AS
+		INSERT INTO PostGradUser VALUES(null, null);
+		INSERT INTO Examiner VALUES (SCOPE_IDENTITY(), @ExaminerName,  @fieldOfWork, @National);
+		INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, SCOPE_IDENTITY())
 RETURN
 
 
-
--- i) QUESTION: WHERE IS THE GRADE INPUT, SHOULDNT THE NAME BE ADDGRADE.
+-- h) QUESTION: WHERE IS THE GRADE INPUT, SHOULDNT THE NAME BE ADDGRADE.
 GO 
 	CREATE PROC AddGrade
 	@ThesisSerialNo INT,
