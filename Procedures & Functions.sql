@@ -528,6 +528,30 @@ RETURN
 
 -- 6
 
+-- a) View my profile that contains all my information.
+GO
+	CREATE PROC viewMyProfile
+	@studentId INT
+	AS
+	IF(
+		EXISTS	(
+				SELECT *
+				FROM GucianStudent
+				WHERE GucianStudent.id=@studentId
+				)
+	)
+	BEGIN
+		SELECT *
+		FROM GucianStudent INNER JOIN PostGradUser ON GucianStudent.id=PostGradUser.id
+		WHERE GucianStudent.id=@studentId
+	END
+	ELSE 
+	BEGIN
+		SELECT *
+		FROM NonGucianStudent INNER JOIN PostGradUser ON NonGucianStudent.id=PostGradUser.id
+		WHERE NonGucianStudent.id=@studentId
+	END
+RETURN
 -- b) Edit my profile (change any of my personal information).
 
 
