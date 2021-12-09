@@ -12,3 +12,14 @@ EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 
 
 -- insert Supervisors
 EXEC SupervisorRegister 'Super firstname 1', 'Supervisor lastname 1', 'Supervisor password 1', 'Supervisor faculty 1', 'Supervisor email 1';
+
+-- insert Thesis
+INSERT INTO Thesis(	field, type, title, startDate, endDate, grade, noExtension) 	
+VALUES ('thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1);
+
+-- insert Thesis payment
+DECLARE @SuccessOut BIT
+EXEC AdminIssueThesisPayment @ThesisSerialNo = 1, @amount = 1000, @noOfInstallments = 4, @fundPercentage = 10, @Success = @SuccessOut OUTPUT
+PRINT @SuccessOut
+
+DELETE FROM Payment;

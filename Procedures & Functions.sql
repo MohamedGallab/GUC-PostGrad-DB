@@ -1,6 +1,20 @@
 USE PostGradDB
+
 -- Custome Procedures & Functions & Views
 
+GO
+CREATE VIEW allStudentsRegisterThesis AS
+(
+	SELECT *
+	FROM
+		GUCianStudentRegisterThesis 
+		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
+	UNION
+	SELECT *, NULL
+	FROM
+		NonGUCianStudentRegisterThesis
+		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
+)
 
 -- 1
 
@@ -145,7 +159,7 @@ RETURN
 -- d) List the number of on going theses.
 GO
 CREATE PROC AdminViewOnGoingTheses
-@thesesCount INT
+@thesesCount INT OUTPUT
 AS
 	SELECT @thesesCount = COUNT(*)
 	FROM Thesis
@@ -157,22 +171,11 @@ RETURN
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
-	SELECT Supervisor.first_name, Thesis.title, allStudents.firstname
+	SELECT Supervisor.first_name + Supervisor.last_name, Thesis.title, allStudents.firstname
 	FROM 
-		(
-		SELECT * 
-		FROM 
-			GUCianStudentRegisterThesis 
-			INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
-		UNION 
-		SELECT * 
-		FROM 
-			NonGUCianStudentRegisterThesis
-			INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
-		)
-		AS allStudents
-		INNER JOIN Supervisor ON allStudents.supid = Supervisor.id
-		INNER JOIN Thesis ON allStudents.serial_no = Thesis.serialNumber
+		allStudentsRegisterThesis
+		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
+		INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
 	WHERE
 		endDate IS NULL
 RETURN
@@ -183,7 +186,7 @@ GO
 CREATE PROC AdminListNonGucianCourse
 @courseID INT
 AS
-	SELECT NonGucianStudent.firstname, NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
+	SELECT NonGucianStudent.firstname + NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
 	FROM 
 		NonGucianStudentTakeCourse
 		INNER JOIN NonGucianStudent ON NonGucianStudentTakeCourse.sid = NonGucianStudent.id
@@ -211,9 +214,11 @@ CREATE PROC AdminIssueThesisPayment
 AS
 	INSERT INTO Payment
 	VALUES (@amount, @noOfInstallments, @fundPercentage);
+
 	UPDATE Thesis
 	SET Thesis.payment_id = SCOPE_IDENTITY()
 	WHERE Thesis.serialNumber = @ThesisSerialNo;
+
 	SET @Success = 1;
 RETURN
 
