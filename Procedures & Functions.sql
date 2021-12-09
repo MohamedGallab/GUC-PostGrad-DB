@@ -1,33 +1,39 @@
 USE PostGradDB
+-- Custome Procedures & Functions & Views
+
 
 -- 1
 
 -- a) Register to the website by using my name (First and last name), password, faculty, email, and address.
 
 	-- i) student
+
 GO
 CREATE PROC StudentRegister
-@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@Gucian BIT,@email VARCHAR(50),@address VARCHAR(10)
+@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20), @faculty VARCHAR(20), @Gucian BIT, @email VARCHAR(50), @address VARCHAR(50)
 AS
+	INSERT INTO PostGradUser VALUES(@email, @password);
 	IF (@Gucian = 1)
+	-- if gucian insert into table gucian
 	BEGIN
-		-- if gucian insert into table gucian
-		INSERT INTO Gucian (firstname,lastname,faculty,type,password,email,address) VALUES (@first_name, @last_name, @faculty, 'Gucian',@password,@email,@address)
+		INSERT INTO GucianStudent (id, firstname, lastname, faculty, address) VALUES (SCOPE_IDENTITY(), @first_name, @last_name, @faculty, @address);
 	END
 
 	ELSE
-		--else insert into table nongucian
+	--else insert into table nongucian
 	BEGIN
-		INSERT INTO NonGucianStudent (firstname,lastname,faculty,type,email,address) VALUES (@first_name, @last_name, @faculty, 'Non Gucian',@password,@email,@address)
+		INSERT INTO NonGucianStudent (id, firstname, lastname, faculty, address) VALUES (SCOPE_IDENTITY(), @first_name, @last_name, @faculty, @address)
 	END	
 RETURN
 
 	-- ii) supervisor
+
 GO
 CREATE PROC SupervisorRegister
-@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50),@address VARCHAR(10)
+@first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50)
 AS
-	INSERT INTO Supervisor (firstname,lastname,faculty,password,email,address) VALUES (@first_name, @last_name, @faculty, @password,@email,@address)
+	INSERT INTO PostGradUser VALUES(@email, @password);
+	INSERT INTO Supervisor (id, first_name,last_name,faculty) VALUES (SCOPE_IDENTITY(), @first_name, @last_name, @faculty);
 RETURN
 
 -- 2
