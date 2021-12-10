@@ -92,8 +92,8 @@ CREATE PROC addMobile
 AS
 	--if ID is in gucian table 
 	IF(EXISTS (SELECT *
-			  FROM Gucian
-			  WHERE Gucian.ID=@ID))
+			  FROM GucianStudent G
+			  WHERE G.ID=@ID))
 	BEGIN
 		INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
 	END
@@ -102,8 +102,8 @@ AS
 	ELSE
 	BEGIN
 		IF(EXISTS (SELECT *
-				  FROM NonGucian
-				  WHERE NonGucian.ID=@ID))
+				  FROM NonGucianStudent NG
+				  WHERE NG.ID=@ID))
 		BEGIN
 			INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID,@mobile_number);
 		END
