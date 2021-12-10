@@ -16,6 +16,16 @@ CREATE VIEW allStudentsRegisterThesis AS
 		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
 )
 
+GO
+CREATE VIEW allStudents AS
+(
+	SELECT *
+	FROM GucianStudent
+	UNION
+	SELECT *, NULL
+	FROM NonGucianStudent
+)
+
 -- Custom Procedures & Functions & Views
 
 -- 1
@@ -173,7 +183,7 @@ RETURN
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
-	SELECT Supervisor.first_name + Supervisor.last_name, Thesis.title, allStudents.firstname
+	SELECT Supervisor.first_name + Supervisor.last_name, Thesis.title, allStudentsRegisterThesis.firstname + allStudentsRegisterThesis.lastname
 	FROM 
 		allStudentsRegisterThesis
 		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
@@ -229,21 +239,10 @@ GO
 CREATE PROC AdminViewStudentProfile
 @sid INT
 AS
-	SELECT *
-	FROM(
-		SELECT * 
-		FROM 
-			GUCianStudentRegisterThesis 
-			INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
-		UNION 
-		SELECT * 
-		FROM 
-			NonGUCianStudentRegisterThesis
-			INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
-		)
-		AS allStudents
-	WHERE
-		allStudents.sid = @sid
+	IF (EXISTS (SELECT * FROM GucianStudent WHERE GucianStudent.id = @sid))
+		SELECT * FROM GucianStudent WHERE GucianStudent.id = @sid
+	ELSE
+		SELECT * FROM NonGucianStudent WHERE NonGucianStudent.id = @sid
 RETURN
 
 -- j) Issue installments as per the number of installments for a certain payment every six months starting from the entered date.
@@ -260,10 +259,12 @@ AS
 		WHERE Payment.id = @paymentID)
 
 	WHILE @i < @no_installments
+	BEGIN
 		INSERT INTO Installment(date, paymentId)
 		VALUES (@InstallmentDate, @paymentID);
 		SET @InstallmentDate = DATEADD(month, 6, @InstallmentDate);
 		SET @i = @i + 1;
+	END
 RETURN
 
 -- k) List the title(s) of accepted publication(s) per thesis.
@@ -303,7 +304,7 @@ RETURN
 -- GRADE DECIMAL ????
 GO
 CREATE PROC addStudentCourseGrade
-@courseID INT, @studentID INT, @grade DECIMAL
+@courseID INT, @studentID INT, @grade DECIMAL (5,2)
 AS
 	UPDATE NonGucianStudentTakeCourse
 	SET grade = @grade
