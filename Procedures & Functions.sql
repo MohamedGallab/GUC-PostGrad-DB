@@ -68,46 +68,19 @@ RETURN
 
 GO
 CREATE PROC userLogin
-@ID INT,@password VARCHAR(20), @Success BIT OUTPUT, @Type INT OUTPUT
+@ID INT,@password VARCHAR(20), @Success BIT OUTPUT
 AS
 	SET @Success  = 0;
-	SET @Type  = 0;
 
-	--gucian type = 1 
 	IF(
-		EXISTS	(
+			EXISTS	( 
 				SELECT *
-				FROM Gucian
-				WHERE Gucian.ID=@ID AND Gucian.Password=@password
+				FROM PostGradUser U
+				WHERE U.ID=@ID AND U.Password=@password
 				)
 	)
 	BEGIN
 		SET @Success=1;
-		SET @Type=1;
-	END
-
-	--non gucian type = 2
-	ELSE
-	BEGIN
-		IF(EXISTS (SELECT *
-				  FROM NonGucian
-				  WHERE NonGucian.ID=@ID AND NonGucian.Password=@password ))
-		BEGIN
-			SET @Success=1;
-			SET @Type=2;
-		END
-	
-		ELSE
-		BEGIN
-			--supervisor type = 3
-			IF(EXISTS (SELECT *
-					  FROM Supervisor
-					  WHERE Supervisor.ID=@ID AND Supervisor.Password=@password ))
-			BEGIN
-				SET @Success=1;
-				SET @Type=3;
-			END
-		END
 	END
 
 RETURN 
@@ -117,7 +90,7 @@ GO
 CREATE PROC addMobile
 @ID INT,@mobile_number VARCHAR(20)
 AS
-	--gucian 
+	--if ID is in gucian table 
 	IF(EXISTS (SELECT *
 			  FROM Gucian
 			  WHERE Gucian.ID=@ID))
@@ -125,7 +98,7 @@ AS
 		INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
 	END
 
-	--non gucian type = 2
+	--if id in non gucian table
 	ELSE
 	BEGIN
 		IF(EXISTS (SELECT *
@@ -488,14 +461,14 @@ GO
 	CREATE PROC AddDefenseGrade
 	@ThesisSerialNo INT,
 	@DefenseDate DATETIME,
-	@grade DECIMAL(4,2)
+	@grade DECIMAL(5,2)
 	AS
 	UPDATE DEFENSE
 	SET grade = @grade
-	WHERE serialNumber = @ThesisSerialNo AND date = @DefenseDate
+	WHERE DEFENSE.serialNumber = @ThesisSerialNo AND DEFENSE.date = @DefenseDate
 RETURN
 
--- b) Add grade for a defense. -- me no understand what this mean! -- check new users stories bud (Gallab)
+-- b) Add comment for a defense. 
 
 GO 
 	CREATE PROC AddCommentsGrade
@@ -503,9 +476,9 @@ GO
 	@DefenseDate DATETIME,
 	@comments VARCHAR(300)
 	AS
-	UPDATE DEFENSE
-	SET grade = @grade
-	WHERE serialNumber = @ThesisSerialNo AND date = @DefenseDate
+	UPDATE ExaminerEvaluateDefense
+	SET comment = @comments
+	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate
 RETURN
 
 
