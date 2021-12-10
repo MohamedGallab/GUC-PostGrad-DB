@@ -323,7 +323,7 @@ RETURN
 
 -- 4
 
--- a) Evaluate a student’s progress report, and give evaluation value 0 to 3. DONE
+-- a) Evaluate a student’s progress report, and give evaluation value 0 to 3.
 GO
 	CREATE PROC EvaluateProgressReport
 	@supervisorid INT,
@@ -331,39 +331,19 @@ GO
 	@progressreportno INT,
 	@evaluation INT
 	AS
-		UPDATE GucianProgressReport
-		SET GUCianProgressReport.eval = @evaluation
-		WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no;
-		UPDATE NonGUCianProgressReport
-		SET NonGUCianProgressReport.eval = @evaluation
-		WHERE  NonGUCianProgressReport.supid = @supervisorid AND @thesisserialno = NonGUCianProgressReport.thesisserialnumber and @progressreportno = NonGUCianProgressReport.no
-
+		IF (@evaluation in (0,1,2,3))
+		BEGIN
+			UPDATE GucianProgressReport
+			SET GUCianProgressReport.eval = @evaluation
+			WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no;
+			
+			UPDATE NonGUCianProgressReport
+			SET NonGUCianProgressReport.eval = @evaluation
+			WHERE  NonGUCianProgressReport.supid = @supervisorid AND @thesisserialno = NonGUCianProgressReport.thesisserialnumber and @progressreportno = NonGUCianProgressReport.no
+		END
 RETURN
 
 -- b) View all my students’s names and years spent in the thesis. TWO SOLUTIONS, THIS ONE BETTER THAN COMMENTED
---GO
---	CREATE PROC ViewSupStudentsYears
---	@supervisorID INT
---	AS
---		SELECT allStudents.firstname, allStudents.lastname, Thesis.years
---		FROM 
---			(
---			SELECT * 
---			FROM 
---				GUCianStudentRegisterThesis 
---				INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
---			UNION 
---			SELECT * 
---			FROM 
---				NonGUCianStudentRegisterThesis
---				INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
---			)
---			AS allStudents
---			INNER JOIN Supervisor ON allStudents.supid = Supervisor.id
---			INNER JOIN Thesis ON allStudents.serial_no = Thesis.serialNumber
---			WHERE @supervisorID = NonGUCianStudentRegisterThesis.supid
-	
---RETURN
 
 GO 
 CREATE PROC ViewSupStudentsYears
@@ -397,21 +377,19 @@ GO
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
--- Update my personal information. DONE QUESTION: SHOULD WE ASSUME ALL VALUES WILL BE AVAIABLE AS INPUTS?
+-- Update my personal information.
 GO
 	CREATE PROC UpdateSupProfile
 	@supervisorID INT,
-	@first_name VARCHAR(20),
-	@last_name VARCHAR(20),
-	@email VARCHAR(50),
+	@name VARCHAR(20),
 	@faculty VARCHAR(20)
 	AS
 	UPDATE Supervisor
-	SET Supervisor.first_name = @first_name, Supervisor.last_name = @last_name, Supervisor.email = @email, Supervisor.faculty = @faculty
+	SET Supervisor.name = @name, Supervisor.faculty = @faculty
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
--- d) View all publications of a student. DONE
+-- d) View all publications of a student.
 
 GO
 	CREATE PROC ViewAStudentPublications
@@ -443,7 +421,7 @@ GO
 	WHERE THESIS.serialNumber = @ThesisSerialNo
 RETURN
 
--- Add defense for a thesis NONGUCIAN. DONE
+-- Add defense for a thesis NONGUCIAN.
 
 GO
 	CREATE PROC AddDefenseNonGucian
@@ -458,16 +436,20 @@ GO
 		INSERT INTO DEFENSE (serialNumber, date, location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
 RETURN
 
--- g) Cancel a Thesis if the evaluation of the last progress report is zero. QUESTION : HOW WOULD I DELETE FROM A TABLE WHICH IN JOINED WITH ANOTHER?
+-- g) Cancel a Thesis if the evaluation of the last progress report is zero.
 GO 
 	CREATE PROC CancelThesis
 	@ThesisSerialNo INT
 	AS
-	SELECT Top 1 *
+	DECLARE @evalLastReport INT
+	SELECT Top 1 @evalLastReport = eval
 	FROM Thesis
 		INNER JOIN GUCianProgressReport ON GUCianProgressReport.thesisSerialNumber = Thesis.serialNumber
 		WHERE @ThesisSerialNo = Thesis.serialNumber
 	ORDER BY date DESC
+	
+	IF (@evalLastReport = 0)
+		DELETE FROM Thesis WHERE THESIS.serialNumber = @ThesisSerialNo
 RETURN
 
 -- f) Add examiner(s) for a defense.
@@ -488,7 +470,7 @@ CREATE PROC AddExaminer
 RETURN
 
 
--- h) QUESTION: WHERE IS THE GRADE INPUT, SHOULDNT THE NAME BE ADDGRADE.
+-- h) QUESTION: WHERE IS THE GRADE INPUT.
 GO 
 	CREATE PROC AddGrade
 	@ThesisSerialNo INT,
