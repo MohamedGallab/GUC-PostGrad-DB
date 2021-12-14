@@ -4,9 +4,23 @@ DELETE FROM PostGradUser;
 
 -- insert Admin
 DBCC CHECKIDENT (PostGradUser, RESEED, 0); -- reseeds the entity starting from 1
-INSERT INTO PostGradUser VALUES ('Admin email', 'Admin Password');
+INSERT INTO PostGradUser VALUES ('AlbusDumbledoreEmail', 'AlbusDumbledorePass');
 INSERT INTO Admin VALUES (SCOPE_IDENTITY());
 
+---- Proc to insert admins
+--GO
+--CREATE PROC InsertAdmin
+--@email VARCHAR(50), @password VARCHAR(20)
+--AS
+--	INSERT INTO PostGradUser VALUES(@email, @password);
+--	INSERT INTO Admin VALUES (SCOPE_IDENTITY());
+--RETURN
+
+--GO
+--EXEC InsertAdmin 'AlbusDumbledoreEmail', 'AlbusDumbledorePass';
+--EXEC InsertAdmin 'MinervaMcGonagallEmail', 'MinervaMcGonagallPass';
+
+GO
 -- insert Students 4 gucian, 3 nongucian, 2 supervisors, 2 examiners, 2 admin
 EXEC StudentRegister 'Harry', 'Potter', 'HarryPotterPass', 'Gryffindor', 1, 'HarryPotterPassEmail ', '4 Privet Drive';
 EXEC StudentRegister 'Ronald', 'Weasley', 'RonaldWeasleyPass', 'Gryffindor', 1, 'RonaldWeasleyPassEmail', 'The Burrow';
@@ -17,23 +31,38 @@ EXEC StudentRegister 'Draco', 'Malfoy', 'DracoMalfoyPass', 'Slytherin', 0, 'Drac
 EXEC StudentRegister 'Cedric', 'Diggory', 'CedricDiggoryPass', 'Hufflepuff', 0, 'CedricDiggoryEmail', 'Ottery St Catchpole';
 EXEC StudentRegister 'Luna', 'Lovegood ', 'LunaLovegoodPass', 'Ravenclaw', 0, 'LunaLovegoodEmail	', 'The Lovegood House';
 
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
-EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
+--EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 
 -- insert Supervisors
-EXEC SupervisorRegister 'Super firstname 1', 'Super lastname 1', 'Super password 1', 'Super faculty 1', 'Super email 1';
+EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
+EXEC SupervisorRegister 'Severus', 'Snape', 'SeverusSnapePass', 'Slytherin', 'SeverusSnapeEmail';
+EXEC SupervisorRegister 'Filius', 'Flitwick', 'FiliusFlitwickPass', 'Ravenclaw', 'FiliusFlitwickEmail';
+
+--EXEC SupervisorRegister 'Super firstname 1', 'Super lastname 1', 'Super password 1', 'Super faculty 1', 'Super email 1';
 
 -- insert Thesis
-INSERT INTO Thesis(	field, type, title, startDate, endDate, grade, noExtension) 	
-VALUES ('thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1);
-INSERT INTO Thesis(	field, type, title, startDate, endDate, grade, noExtension) 	
-VALUES ('thesis field 2', 'type 2', 'title 2', '2020-01-01', '2021-01-01', 4.0, 1);
+--INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+--VALUES ('thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1);
+GO
+CREATE PROC AddThesis
+@field VARCHAR(20), @type VARCHAR(10), @title VARCHAR(50), @startDate DATE, @endDate DATE, @grade DECIMAL(5,2), @noExtension INT
+AS
+	INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+	VALUES (@field, @type, @title, @startDate, @endDate, @grade, @noExtension);
+RETURN
 
+EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
+EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
+EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
+EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
+
+GO
 -- insert Thesis payment
 DECLARE @SuccessOut BIT
 EXEC AdminIssueThesisPayment @ThesisSerialNo = 1, @amount = 1000, @noOfInstallments = 4, @fundPercentage = 10, @Success = @SuccessOut OUTPUT
@@ -42,7 +71,7 @@ PRINT @SuccessOut
 -- link thesis studnet and supervisor
 INSERT INTO GUCianStudentRegisterThesis VALUES (1,2,1)
 
--- inset publication and link to thesis
+-- insert publication and link to thesis
 INSERT INTO Publication VALUES('PUB title 1', '2020-02-02', 'PUB place 1', 1, 'PUB host 1')
 INSERT INTO ThesisHasPublication VALUES (1,1);
 INSERT INTO Publication VALUES('PUB title 2', '2020-02-02', 'PUB place 2', 0, 'PUB host 2')
