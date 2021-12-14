@@ -31,6 +31,7 @@ EXEC StudentRegister 'Draco', 'Malfoy', 'DracoMalfoyPass', 'Slytherin', 0, 'Drac
 EXEC StudentRegister 'Cedric', 'Diggory', 'CedricDiggoryPass', 'Hufflepuff', 0, 'CedricDiggoryEmail', 'Ottery St Catchpole';
 EXEC StudentRegister 'Luna', 'Lovegood ', 'LunaLovegoodPass', 'Ravenclaw', 0, 'LunaLovegoodEmail	', 'The Lovegood House';
 
+GO
 --EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 --EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 --EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
@@ -39,6 +40,7 @@ EXEC StudentRegister 'Luna', 'Lovegood ', 'LunaLovegoodPass', 'Ravenclaw', 0, 'L
 --EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 --EXEC StudentRegister 'stu first_name 1', 'gucian last_name 1', 'gucian password 1', 'gucian faculty 1', 1, 'gucian email 1', 'gucian adrs 1';
 
+GO
 -- insert Supervisors
 EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
 EXEC SupervisorRegister 'Severus', 'Snape', 'SeverusSnapePass', 'Slytherin', 'SeverusSnapeEmail';
@@ -57,6 +59,7 @@ AS
 	VALUES (@field, @type, @title, @startDate, @endDate, @grade, @noExtension);
 RETURN
 
+GO
 EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
 EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
 EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
@@ -68,9 +71,11 @@ DECLARE @SuccessOut BIT
 EXEC AdminIssueThesisPayment @ThesisSerialNo = 1, @amount = 1000, @noOfInstallments = 4, @fundPercentage = 10, @Success = @SuccessOut OUTPUT
 PRINT @SuccessOut
 
+GO
 -- link thesis studnet and supervisor
 INSERT INTO GUCianStudentRegisterThesis VALUES (1,2,1)
 
+GO
 -- insert publication and link to thesis
 INSERT INTO Publication VALUES('PUB title 1', '2020-02-02', 'PUB place 1', 1, 'PUB host 1')
 INSERT INTO ThesisHasPublication VALUES (1,1);
@@ -95,3 +100,108 @@ EXEC linkCourseStudent 2,3;
 EXEC addStudentCourseGrade 2,3,15;
 EXEC linkCourseStudent 2,4;
 EXEC addStudentCourseGrade 2,4,55;
+
+
+-- INSERTING THESIS --
+GO
+DECLARE @ThesisID INT;
+INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field','type','title', 'startDate','endDate');
+SET @ThesisID = SCOPE_IDENTITY();
+DECLARE @ThesisPaymentID INT;
+EXEC AdminIssueThesisPayment @ThesisID,	amount, noOfInstallments, fundPercentage, Success;
+SET @ThesisPaymentID = SCOPE_IDENTITY();
+
+GO
+DECLARE @StudentID INT;
+EXEC StudentRegister 'first_name', 'last_name', 'password', 'faculty', 1, 'email ', 'address';
+SET @StudentID = SCOPE_IDENTITY();
+PRINT @StudentID;
+IF (GUCIAN = 1)
+BEGIN
+	EXEC addMobile @StudentID, 'mobile_number';
+END
+
+DECLARE @SupervisorID INT;
+EXEC SupervisorRegister 'first_name', 'last_name', 'password', 'faculty', 'email';
+SET @SupervisorID = SCOPE_IDENTITY();
+RETURN
+
+IF (GUCIAN = 1)
+BEGIN
+	INSERT INTO GUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+END
+ELSE 
+BEGIN
+	INSERT INTO NonGUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+END
+
+DECLARE @ProgressReportNo INT;
+EXEC AddProgressReport @ThesisID, 'Date';
+SET @ProgressReportNo = SCOPE_IDENTITY();
+
+EXEC EvaluateProgressReport @SupervisorID, @ThesisID, @ProgressReportNo, eval;
+
+EXEC AddGrade @ThesisID, grade;
+
+-- ADDING COURSE --
+DECLARE @CourseID INT;
+EXEC AddCourse 'Code', creditHrs, fees;
+SET @CourseID = SCOPE_IDENTITY();
+
+EXEC linkCourseStudent @CourseID, @StudentID;
+
+EXEC addStudentCourseGrade @CourseID, @StudentID, grade;
+
+DECLARE @Fees DECIMAL;
+SELECT @Fees = fees FROM Course WHERE id = @CourseID;
+
+DECLARE @CoursePaymentId INT;
+INSERT INTO PAYMENT (amount, no_Installments, fundPercentage) VALUES (@Fees, no_Installments, fundPercentage);
+SET @CoursePaymentId = SCOPE_IDENTITY();
+
+INSERT INTO NonGucianStudentPayForCourse VALUES (@StudentID, @CoursePaymentId, @CourseID);
+
+-- ADDING DEFENSE --
+
+IF (GUCIAN = 1)
+	EXEC AddDefenseGucian @ThesisID, 'DefenseDate', 'DefenseLocation';
+ELSE
+	EXEC AddDefenseNonGucian @ThesisID, 'DefenseDate', 'DefenseLocation';
+
+EXEC AddExaminer @ThesisID, 'DefenseDate', 'ExaminerName', 'NationalBit', 'fieldOfWork';
+
+EXEC AddDefenseGrade @ThesisID, 'DefenseDate', grade;
+
+EXEC AddCommentsGrade @ThesisID, 'DefenseDate', 'comments';
+
+DECLARE @PubID INT;
+EXEC addPublication 'title', 'pubDateTime', 'host', 'place', accepted;
+SET @PubID = SCOPE_IDENTITY();
+EXEC linkPubThesis @PubID, @ThesisID;
+
+
+-- ONLY INSERT AND EXEC STATEMENTS --
+INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field','type','title', 'startDate','endDate');
+EXEC AdminIssueThesisPayment @ThesisID,	amount, noOfInstallments, fundPercentage, Success;
+EXEC StudentRegister 'first_name', 'last_name', 'password', 'faculty', 1, 'email ', 'address';
+EXEC addMobile @StudentID, 'mobile_number';
+EXEC SupervisorRegister 'first_name', 'last_name', 'password', 'faculty', 'email';
+INSERT INTO GUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+INSERT INTO NonGUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+EXEC AddProgressReport @ThesisID, 'Date';
+EXEC EvaluateProgressReport @SupervisorID, @ThesisID, @ProgressReportNo, eval;
+EXEC AddGrade @ThesisID, grade;
+
+EXEC AddCourse 'Code', creditHrs, fees;
+EXEC linkCourseStudent @CourseID, @StudentID;
+EXEC addStudentCourseGrade @CourseID, @StudentID, grade;
+INSERT INTO PAYMENT (amount, no_Installments, fundPercentage) VALUES (@Fees, no_Installments, fundPercentage);
+INSERT INTO NonGucianStudentPayForCourse VALUES (@StudentID, @CoursePaymentId, @CourseID);
+
+EXEC AddDefenseGucian @ThesisID, 'DefenseDate', 'DefenseLocation';
+EXEC AddDefenseNonGucian @ThesisID, 'DefenseDate', 'DefenseLocation';
+EXEC AddExaminer @ThesisID, 'DefenseDate', 'ExaminerName', 'NationalBit', 'fieldOfWork';
+EXEC AddDefenseGrade @ThesisID, 'DefenseDate', grade;
+EXEC AddCommentsGrade @ThesisID, 'DefenseDate', 'comments';
+EXEC addPublication 'title', 'pubDateTime', 'host', 'place', accepted;
+EXEC linkPubThesis @PubID, @ThesisID;
