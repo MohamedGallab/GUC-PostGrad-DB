@@ -17,9 +17,30 @@ EXEC AdminViewOnGoingTheses @thesesCount = @thesesCountOut OUTPUT;
 PRINT (@thesesCountOut);
 
 -- e)
+EXEC AdminViewStudentThesisBySupervisor;
 
 -- f)
-
+EXEC AdminListNonGucianCourse 2;
 -- g)
-
+EXEC AdminUpdateExtension 1;
 -- h)
+	-- DONE
+-- i)
+EXEC AdminViewStudentProfile 1;
+
+-- j)
+EXEC AdminIssueInstallPayment 1, '2020-01-01';
+
+DECLARE @no_installments INT = 
+		(SELECT Payment.no_installments
+		FROM Payment
+		WHERE Payment.id = 1)
+print(@no_installments)
+
+delete from Installment;
+
+-- k)
+EXEC AdminListAcceptPublication;
+-- l)
+	-- DONE
+-- m)
