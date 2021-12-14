@@ -1,6 +1,6 @@
 USE PostGradDB
 
--- Custome Procedures & Functions & Views
+-- Custom Procedures & Functions & Views
 
 GO
 CREATE VIEW allStudentsRegisterThesis AS
@@ -566,20 +566,83 @@ GO
 	END
 RETURN
 -- b) Edit my profile (change any of my personal information).
+GO
+	CREATE PROC editMyProfile
+	@studentID int,
+	@firstName varchar(10),
+	@lastName varchar(10),
+	@password varchar(10),
+	@email varchar(10),
+	@address varchar(10),
+	@type varchar(10)
 
+	AS
+	IF(
+		EXISTS	(
+				SELECT *
+				FROM GucianStudent
+				WHERE GucianStudent.id=@studentId
+				)
+	)
+	BEGIN
+		UPDATE GucianStudent 
+		SET firstname=@firstName , lastname=@lastName , address=@address ,type=@type
+		WHERE id=@studentID
+
+		UPDATE PostGradUser
+		SET password=@password , email=@email
+		WHERE id=@studentID
+	END
+	ELSE 
+	BEGIN
+		UPDATE NonGucianStudent 
+		SET firstname=@firstName , lastname=@lastName , address=@address ,type=@type
+		WHERE id=@studentID
+
+		UPDATE PostGradUser
+		SET password=@password , email=@email
+		WHERE id=@studentID
+	END
+RETURN
 
 -- c) As a Gucian graduate, add my undergarduate ID.
-
-
+GO
+	CREATE PROC addUndergradID
+	@studentID int, 
+	@undergradID varchar(10)
+	
+	AS
+	UPDATE GucianStudent
+	SET undergradID=@undergradID
+	WHERE id=@studentID
 
 
 -- d) As a nonGucian student, view my courses’ grades
-
-
+GO 
+	CREATE PROC ViewCoursesGrades
+	@studentID int
+	AS
+	SELECT Course.courseCode , NonGucianStudentTakeCourse.grade
+	FROM NonGucianStudentTakeCourse INNER JOIN Course ON NonGucianStudentTakeCourse.cid=Course.id
+	WHERE NonGucianStudentTakeCourse.sid=@studentID
 
 -- e) View all my payments and installments.
 	-- i)
+GO 
+	CREATE PROC ViewCoursePaymentsInstall
+	@studentID int
+	AS
+	SELECT*
+	FROM NonGucianStudentPayForCourse 
+	INNER JOIN Payment ON Payment.id=NonGucianStudentPayForCourse.paymentNo 
+	INNER JOIN Installment ON Installment.paymentId=Payment.id
+	WHERE NonGucianStudentPayForCourse.sid=@studentID
 	-- ii)
+GO 
+	CREATE PROC ViewThesisPaymentsInstall
+	@studentID int
+	AS
+
 	-- iii)
 	-- iv)
 
