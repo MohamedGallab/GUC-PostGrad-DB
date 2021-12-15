@@ -144,6 +144,7 @@ CREATE TABLE GUCianProgressReport(
 	state INT,
 	thesisSerialNumber INT,
 	supid INT,
+	description varchar(200),
 
 	PRIMARY KEY(sid,no),
 
@@ -160,6 +161,8 @@ CREATE TABLE NonGUCianProgressReport(
 	state INT,
 	thesisSerialNumber INT,
 	supid INT,
+	description varchar(200),
+
 
 	PRIMARY KEY(sid,no),
 

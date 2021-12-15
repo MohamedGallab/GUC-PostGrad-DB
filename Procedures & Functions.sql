@@ -615,7 +615,7 @@ GO
 	UPDATE GucianStudent
 	SET undergradID=@undergradID
 	WHERE id=@studentID
-
+RETURN
 
 -- d) As a nonGucian student, view my courses’ grades
 GO 
@@ -625,7 +625,7 @@ GO
 	SELECT Course.courseCode , NonGucianStudentTakeCourse.grade
 	FROM NonGucianStudentTakeCourse INNER JOIN Course ON NonGucianStudentTakeCourse.cid=Course.id
 	WHERE NonGucianStudentTakeCourse.sid=@studentID
-
+RETURN
 -- e) View all my payments and installments.
 	-- i)
 GO 
@@ -637,29 +637,138 @@ GO
 	INNER JOIN Payment ON Payment.id=NonGucianStudentPayForCourse.paymentNo 
 	INNER JOIN Installment ON Installment.paymentId=Payment.id
 	WHERE NonGucianStudentPayForCourse.sid=@studentID
+RETURN
 	-- ii)
 GO 
 	CREATE PROC ViewThesisPaymentsInstall
 	@studentID int
 	AS
-
+	SELECT *
+	FROM allStudentsRegisterThesis 
+		INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
+		INNER JOIN Payment ON Payment.id = Thesis.payment_id
+		INNER JOIN Installment ON Payment.id = Installment.paymentId
+	WHERE allStudentsRegisterThesis.sid = @studentID
+RETURN
 	-- iii)
-	-- iv)
+GO
+	CREATE PROC ViewUpcomingInstallments
+	@studentID int
+	AS
+	SELECT Installment.*
+	FROM allStudentsRegisterThesis 
+		INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
+		INNER JOIN Payment ON Payment.id = Thesis.payment_id
+		INNER JOIN Installment ON Payment.id = Installment.paymentId
+	WHERE Installment.date> CAST(GETDATE() AS DATE) AND allStudentsRegisterThesis.sid=@studentID AND Installment.done=0
 
+	UNION
+
+	SELECT Installment.*
+	FROM NonGucianStudentPayForCourse 
+	INNER JOIN Payment ON Payment.id=NonGucianStudentPayForCourse.paymentNo 
+	INNER JOIN Installment ON Installment.paymentId=Payment.id
+	WHERE Installment.date> CAST(GETDATE() AS DATE) AND NonGucianStudentPayForCourse.sid=@studentID AND Installment.done=0
+RETURN
+	-- iv)
+GO
+	CREATE PROC ViewMissedInstallments
+	@studentID int
+	AS
+	SELECT Installment.*
+	FROM allStudentsRegisterThesis 
+		INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
+		INNER JOIN Payment ON Payment.id = Thesis.payment_id
+		INNER JOIN Installment ON Payment.id = Installment.paymentId
+	WHERE Installment.date< CAST(GETDATE() AS DATE) AND allStudentsRegisterThesis.sid=@studentID AND Installment.done=0
+
+	UNION
+
+	SELECT Installment.*
+	FROM NonGucianStudentPayForCourse 
+	INNER JOIN Payment ON Payment.id=NonGucianStudentPayForCourse.paymentNo 
+	INNER JOIN Installment ON Installment.paymentId=Payment.id
+	WHERE Installment.date< CAST(GETDATE() AS DATE) AND NonGucianStudentPayForCourse.sid=@studentID AND Installment.done=0
+RETURN	
 
 -- f) Add and fill my progress report(s).
 	-- i)
+GO
+	CREATE PROC AddProgressReport
+	@thesisSerialNo int,
+	@progressReportDate date
+	AS
+	DECLARE @studentID int = (
+							SELECT allStudentsRegisterThesis.sid
+							FROM allStudentsRegisterThesis
+							WHERE allStudentsRegisterThesis.serial_no = @thesisSerialNo);
+	DECLARE @supervisorID int = (
+							SELECT allStudentsRegisterThesis.supid
+							FROM allStudentsRegisterThesis
+							WHERE allStudentsRegisterThesis.serial_no = @thesisSerialNo);
+	IF(
+		EXISTS	(
+				SELECT *
+				FROM GucianStudent
+				WHERE GucianStudent.id=@studentID 
+				)
+	)
+	BEGIN
+		INSERT INTO GUCianProgressReport(sid,thesisSerialNumber,date,supid) VALUES (@studentID,@thesisSerialNo,@progressReportDate,@supervisorID)
+	END
+	ELSE
+	BEGIN
+		INSERT INTO NonGUCianProgressReport(sid,thesisSerialNumber,date,supid) VALUES (@studentID,@thesisSerialNo,@progressReportDate,@supervisorID)
+	END
+RETURN
 	-- ii)
+GO 
+	CREATE PROC FillProgressReport
+	@thesisSerialNo int,
+	@progressReportNo int,
+	@state int,
+	@description varchar(200)
+	AS
+	UPDATE GUCianProgressReport
+	SET state=@state , description=@description
+	WHERE GUCianProgressReport.thesisSerialNumber=@thesisSerialNo AND GUCianProgressReport.no=@progressReportNo
 
-
-
+	UPDATE NonGUCianProgressReport
+	SET state=@state , description=@description
+	WHERE NonGUCianProgressReport.thesisSerialNumber=@thesisSerialNo AND NonGUCianProgressReport.no=@progressReportNo
+RETURN
 -- g) View my progress report(s) evaluations.
+GO 
+	CREATE PROC ViewEvalProgressReport
+	@thesisSerialNo int,
+	@progressReportNo int
+	AS
+	SELECT GUCianProgressReport.thesisSerialNumber,GUCianProgressReport.no,GUCianProgressReport.eval
+	FROM GUCianProgressReport
+	WHERE GUCianProgressReport.thesisSerialNumber=@thesisSerialNo AND GUCianProgressReport.no=@progressReportNo
 
+	UNION
 
-
-
+	SELECT NonGUCianProgressReport.thesisSerialNumber,NonGUCianProgressReport.no,NonGUCianProgressReport.eval
+	FROM NonGUCianProgressReport
+	WHERE NonGUCianProgressReport.thesisSerialNumber=@thesisSerialNo AND NonGUCianProgressReport.no=@progressReportNo
+RETURN
 -- h) Add publication.
-
-
-
+GO 
+	CREATE PROC addPublication
+	@title varchar(50),
+	@pubDate datetime, 
+	@host varchar(50), 
+	@place varchar(50), 
+	@accepted bit
+	AS
+	INSERT INTO Publication VALUES(@title,@pubDate,@place,@accepted,@host)
+RETURN
 -- i) Link publication to my thesis.
+GO 
+	CREATE PROC linkPubThesis
+	@PubID int, 
+	@thesisSerialNo int
+	AS
+	INSERT INTO ThesisHasPublication VALUES(@thesisSerialNo,@PubID)
+RETURN
