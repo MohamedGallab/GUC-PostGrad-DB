@@ -314,7 +314,6 @@ RETURN
 -- 4
 
 -- a) Evaluate a student’s progress report, and give evaluation value 0 to 3.
--- CHECKED
 GO
 CREATE PROC EvaluateProgressReport
 @supervisorID INT,
@@ -334,51 +333,17 @@ AS
 	END
 RETURN
 
-GO
-INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('Chemistry','MSC','Chemistry wow', '10/7/2001','12/15/2021');
-EXEC StudentRegister 'Harry', 'Potter', 'HarryPotterPass', 'Gryffindor', 1, 'HarryPotterPassEmail ', '4 Privet Drive';
-EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
-INSERT INTO GUCianStudentRegisterThesis VALUES (1,2,1);
-INSERT INTO GUCianProgressReport (sid, date, state, thesisSerialNumber, supid) VALUES (1,'10/10/2012',0,1,2);
-EXEC EvaluateProgressReport 2, 1, 1, 0;
-
-GO
-INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('Computer Science','PHD','Hacker', '1/3/2011','4/12/2018');
-EXEC StudentRegister 'Draco', 'Malfoy', 'DracoMalfoyPass', 'Slytherin', 0, 'DracoMalfoyEmail', ' The Malfoy Mansion';
-EXEC SupervisorRegister 'Severus', 'Snape', 'SeverusSnapePass', 'Slytherin', 'SeverusSnapeEmail';
-INSERT INTO NonGUCianStudentRegisterThesis VALUES (3,2,2);
-INSERT INTO NonGUCianProgressReport (sid, date, state, thesisSerialNumber, supid) VALUES (3,'11/7/2012',0,2,2);
-EXEC EvaluateProgressReport 5, 2, 1, 0;
-
-
 -- b) View all my students’s names and years spent in the thesis.
--- CHECKED
 GO 
 CREATE PROC ViewSupStudentsYears
 @supervisorID INT
 AS
-	SELECT AllStudents.firstname, AllStudents.lastname, AllStudents.years
-	FROM
-	(
-	SELECT GucianStudent.firstname, GucianStudent.lastname, Thesis.years
-	FROM GUCianStudentRegisterThesis
-		INNER JOIN GucianStudent ON GUCianStudentRegisterThesis.sid = GucianStudent.id
-		INNER JOIN Thesis ON GUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
-	WHERE GUCianStudentRegisterThesis.supid = @supervisorID
-	UNION
-	SELECT NonGucianStudent.firstname, NonGucianStudent.lastname, Thesis.years
-	FROM NonGUCianStudentRegisterThesis
-		INNER JOIN NonGucianStudent ON NonGUCianStudentRegisterThesis.sid = NonGucianStudent.id
-		INNER JOIN Thesis ON NonGUCianStudentRegisterThesis.serial_no = Thesis.serialNumber
-	WHERE NonGUCianStudentRegisterThesis.supid = @supervisorID
-	)
-	AS AllStudents
+	SELECT allStudentsRegisterThesis.firstname, allStudentsRegisterThesis.lastname, Thesis.years
+	FROM allStudentsRegisterThesis INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
+	WHERE allStudentsRegisterThesis.supid = @supervisorID
 RETURN
 
-EXEC ViewSupStudentsYears 1;
-
 -- c) View my profile and update my personal information.
--- CHECKED
 	-- i)
 GO 
 CREATE PROC SupViewProfile
@@ -388,9 +353,6 @@ AS
 	FROM Supervisor
 	WHERE Supervisor.id = @supervisorID
 RETURN
-
-EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
-EXEC SupViewProfile 2;
 
 	-- ii)
 GO
@@ -404,6 +366,7 @@ AS
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
+-- to update both names
 GO
 CREATE PROC UpdateSupProfileFullName
 @supervisorID INT,
@@ -415,35 +378,22 @@ AS
 	SET Supervisor.first_name = @first_name, Supervisor.last_name = @last_name, Supervisor.faculty = @faculty
 	WHERE Supervisor.id = @supervisorID
 RETURN
-EXEC UpdateSupProfile 2, StillRemus, Lupin, ALWAYSGRYF;
 
--- d) View all publications of a student. CHECKED
+-- d) View all publications of a student.
 GO
 	CREATE PROC ViewAStudentPublications
 	@StudentID INT
 	AS
-		SELECT id, title, date, place, accepted, host
-		FROM GUCianStudentRegisterThesis
-			INNER JOIN ThesisHasPublication ON ThesisHasPublication.serialNo = GUCianStudentRegisterThesis.serial_no
+		SELECT Publication.id, Publication.title, Publication.date, Publication.place, Publication.accepted, Publication.host
+		FROM allStudentsRegisterThesis
+			INNER JOIN ThesisHasPublication ON ThesisHasPublication.serialNo = allStudentsRegisterThesis.serial_no
 			INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
-		WHERE GUCianStudentRegisterThesis.sid = @StudentID
-		UNION
-		SELECT id, title, date, place, accepted, host 
-		FROM NonGUCianStudentRegisterThesis
-			INNER JOIN ThesisHasPublication ON ThesisHasPublication.serialNo = NonGUCianStudentRegisterThesis.serial_no
-			INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
-		WHERE NonGUCianStudentRegisterThesis.sid = @StudentID
+		WHERE allStudentsRegisterThesis.sid = @StudentID
 RETURN
 
-GO
-INSERT INTO Publication (title, date, place, accepted, host) VALUES ('1ST PUBLICATION', '10/1/2013', 'CAIRO', 1, 'YOUSEF');
-INSERT INTO ThesisHasPublication VALUES (1,1);
-INSERT INTO Publication (title, date, place, accepted, host) VALUES ('2ND PUBLICATION', '12/4/2013', 'ALEX', 1, 'YOUSEF2');
-INSERT INTO ThesisHasPublication VALUES (1,5);
-EXEC ViewAStudentPublications 1;
+-- e) Add defense for a thesis.
 
-GO
--- e) Add defense for a thesis GUCIAN.
+	-- i) GUCIAN.
 GO
 	CREATE PROC AddDefenseGucian
 	@ThesisSerialNo INT,
@@ -451,13 +401,14 @@ GO
 	@DefenseLocation VARCHAR(15)
 	AS
 	INSERT INTO DEFENSE (serialNumber, date, location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
+
 	UPDATE Thesis
 	SET defenseDate = @DefenseDate
 	WHERE THESIS.serialNumber = @ThesisSerialNo
 RETURN
 
-EXEC AddDefenseGucian 1, '10/7/2021', 'cairo';
--- Add defense for a thesis NONGUCIAN.
+
+	-- ii) NONGUCIAN.
 GO
 	CREATE PROC AddDefenseNonGucian
 	@ThesisSerialNo INT,
@@ -471,18 +422,7 @@ GO
 		INSERT INTO DEFENSE (serialNumber, date, location) VALUES (@ThesisSerialNo, @DefenseDate, @DefenseLocation)
 RETURN
 
-EXEC AddCourse 'CSEN 1', 8, 1000;
-EXEC linkCourseStudent 1,3;
-EXEC addStudentCourseGrade 1,3,100;
-
-EXEC AddCourse 'MATH 1', 6, 2000;
-EXEC linkCourseStudent 2,3;
-EXEC addStudentCourseGrade 2,3,55;
-
-EXEC AddDefenseNonGucian 2, '12/17/2021', 'BERLIN';
--- f) Add examiner(s) for a defense. CHECKED
-
--- PROCEDURE WHICH TAKES INPUTS FOR THE ABOVE FUNCTION TO RETURN THE ID FOR THE NEW EXAMINER NEEDED TO INSERT THE NEWEXAMINER TO THE DEFENSE.
+-- f) Add examiner(s) for a defense.
 GO
 CREATE PROC AddExaminer
 	@ThesisSerialNo INT,
@@ -495,12 +435,10 @@ CREATE PROC AddExaminer
 		DECLARE @UserID INT;
 		SET @UserID = SCOPE_IDENTITY();
 		INSERT INTO Examiner VALUES (@UserID, @ExaminerName,  @fieldOfWork, @National);
-		INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, @UserID)
+		INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES (@DefenseDate, @ThesisSerialNo, @UserID);
 RETURN
 
-EXEC AddExaminer 1,'10/7/2021', 'ALBUS', 1, 'MANG';
-
--- g) Cancel a Thesis if the evaluation of the last progress report is zero. CHECKED
+-- g) Cancel a Thesis if the evaluation of the last progress report is zero.
 GO 
 	CREATE PROC CancelThesis
 	@ThesisSerialNo INT

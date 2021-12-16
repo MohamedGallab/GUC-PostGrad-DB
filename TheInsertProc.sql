@@ -1,3 +1,5 @@
+USE PostGradDB;
+
 GO
 CREATE PROC TheInsert
 
