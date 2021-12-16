@@ -24,12 +24,13 @@ EXEC AdminListNonGucianCourse 2;
 -- g)
 EXEC AdminUpdateExtension 1;
 -- h)
-	-- DONE
+DECLARE @Success BIT;
+EXEC AdminIssueThesisPayment 2, 200000, 6, 0, @Success OUTPUT;
 -- i)
 EXEC AdminViewStudentProfile 1;
 
 -- j)
-EXEC AdminIssueInstallPayment 1, '2020-01-01';
+EXEC AdminIssueInstallPayment 2, '2020-12-01';
 
 DECLARE @no_installments INT = 
 		(SELECT Payment.no_installments
@@ -44,3 +45,6 @@ EXEC AdminListAcceptPublication;
 -- l)
 	-- DONE
 -- m)
+select Thesis.defenseDate
+from Thesis
+EXEC ViewExamSupDefense '2021-10-07 00:00:00.000';

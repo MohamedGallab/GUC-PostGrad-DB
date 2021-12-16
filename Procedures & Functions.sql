@@ -68,19 +68,19 @@ RETURN
 
 GO
 CREATE PROC userLogin
-@ID INT,@password VARCHAR(20), @Success BIT OUTPUT
+@ID INT, @password VARCHAR(20), @Success BIT OUTPUT
 AS
-	SET @Success  = 0;
+	SET @Success = 0;
 
 	IF(
-			EXISTS	( 
-				SELECT *
-				FROM PostGradUser U
-				WHERE U.ID=@ID AND U.Password=@password
-				)
+		EXISTS	( 
+			SELECT *
+			FROM PostGradUser
+			WHERE PostGradUser.id = @ID AND PostGradUser.password = @password
+		)
 	)
 	BEGIN
-		SET @Success=1;
+		SET @Success = 1;
 	END
 
 RETURN 
@@ -88,24 +88,28 @@ RETURN
 -- b) add my mobile number(s).
 GO
 CREATE PROC addMobile
-@ID INT,@mobile_number VARCHAR(20)
+@ID INT, @mobile_number VARCHAR(20)
 AS
-	--if ID is in gucian table 
-	IF(EXISTS (SELECT *
-			  FROM GucianStudent G
-			  WHERE G.ID=@ID))
+	-- if ID is in gucian table 
+	IF(EXISTS (
+		SELECT *
+		FROM GucianStudent
+		WHERE GucianStudent.id = @ID)
+		)
 	BEGIN
-		INSERT INTO GUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+		INSERT INTO GUCStudentPhoneNumber VALUES(@ID, @mobile_number);
 	END
 
-	--if id in non gucian table
+	-- if id in non gucian table
 	ELSE
 	BEGIN
-		IF(EXISTS (SELECT *
-				  FROM NonGucianStudent NG
-				  WHERE NG.ID=@ID))
+		IF(EXISTS (
+			SELECT *
+			FROM NonGucianStudent
+			WHERE NonGucianStudent.id = @ID)
+		)
 		BEGIN
-			INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID,@mobile_number);
+			INSERT INTO NonGUCStudentPhoneNumber VALUES(@ID, @mobile_number);
 		END
 	END
 
@@ -146,7 +150,7 @@ CREATE PROC AdminViewOnGoingTheses
 AS
 	SELECT @thesesCount = COUNT(*)
 	FROM Thesis
-	WHERE Thesis.endDate IS NULL
+	WHERE Thesis.endDate IS NULL OR Thesis.endDate > CONVERT (date, GETDATE());
 RETURN
 
 -- e) List all supervisors’ names currently supervising students, theses title, student name.
@@ -154,13 +158,13 @@ RETURN
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
-	SELECT Supervisor.first_name + Supervisor.last_name, Thesis.title, allStudentsRegisterThesis.firstname + allStudentsRegisterThesis.lastname
+	SELECT Supervisor.first_name + ' ' + Supervisor.last_name as 'Supervisor Name', Thesis.title, allStudentsRegisterThesis.firstname + ' ' + allStudentsRegisterThesis.lastname as 'Student Name'
 	FROM 
 		allStudentsRegisterThesis
 		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
 		INNER JOIN Thesis ON allStudentsRegisterThesis.serial_no = Thesis.serialNumber
 	WHERE
-		endDate IS NULL
+		Thesis.endDate IS NULL OR Thesis.endDate > CONVERT (date, GETDATE());
 RETURN
 
 -- f) List nonGucians names, course code, and respective grade.
@@ -169,7 +173,7 @@ GO
 CREATE PROC AdminListNonGucianCourse
 @courseID INT
 AS
-	SELECT NonGucianStudent.firstname + NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
+	SELECT NonGucianStudent.firstname + ' ' + NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
 	FROM 
 		NonGucianStudentTakeCourse
 		INNER JOIN NonGucianStudent ON NonGucianStudentTakeCourse.sid = NonGucianStudent.id
@@ -189,20 +193,28 @@ AS
 RETURN
 
 -- h) Issue a thesis payment.
--- CHECK SCOPE IDENTITY & SUCCESS BIT
 GO
 CREATE PROC AdminIssueThesisPayment
-@ThesisSerialNo INT, @amount DECIMAL, @noOfInstallments INT, @fundPercentage DECIMAL,
+@ThesisSerialNo INT, @amount DECIMAL(8,2), @noOfInstallments INT, @fundPercentage DECIMAL,
 @Success BIT OUTPUT
 AS
-	INSERT INTO Payment
-	VALUES (@amount, @noOfInstallments, @fundPercentage);
+	IF (
+		EXISTS ( SELECT * FROM Thesis WHERE Thesis.serialNumber =  @ThesisSerialNo)
+		)
+	BEGIN
+		INSERT INTO Payment
+		VALUES (@amount, @noOfInstallments, @fundPercentage);
 
-	UPDATE Thesis
-	SET Thesis.payment_id = SCOPE_IDENTITY()
-	WHERE Thesis.serialNumber = @ThesisSerialNo;
+		UPDATE Thesis
+		SET Thesis.payment_id = SCOPE_IDENTITY()
+		WHERE Thesis.serialNumber = @ThesisSerialNo;
 
-	SET @Success = 1;
+		SET @Success = 1;
+	END;
+	ELSE
+	BEGIN
+		SET @Success = 0;
+	END;
 RETURN
 
 -- i) view the profile of any student that contains all his/her information.
@@ -210,36 +222,42 @@ GO
 CREATE PROC AdminViewStudentProfile
 @sid INT
 AS
-	IF (EXISTS (SELECT * FROM GucianStudent WHERE GucianStudent.id = @sid))
+	IF (
+		EXISTS (SELECT * FROM GucianStudent WHERE GucianStudent.id = @sid)
+	)
 		SELECT * FROM GucianStudent WHERE GucianStudent.id = @sid
 	ELSE
 		SELECT * FROM NonGucianStudent WHERE NonGucianStudent.id = @sid
 RETURN
 
 -- j) Issue installments as per the number of installments for a certain payment every six months starting from the entered date.
---  amount, done FROM WHERE ????
 GO
 CREATE PROC AdminIssueInstallPayment
 @paymentID INT, @InstallStartDate DATE
 AS
 	DECLARE @i INT = 0;
+
 	DECLARE @InstallmentDate DATE = @InstallStartDate;
+
 	DECLARE @no_installments INT = 
 		(SELECT Payment.no_installments
 		FROM Payment
-		WHERE Payment.id = @paymentID)
+		WHERE Payment.id = @paymentID);
+
+	DECLARE @Installment_Amount DECIMAL(8,2) = (SELECT Payment.amount
+		FROM Payment
+		WHERE Payment.id = @paymentID) / @no_installments;
 
 	WHILE @i < @no_installments
 	BEGIN
-		INSERT INTO Installment(date, paymentId)
-		VALUES (@InstallmentDate, @paymentID);
+		INSERT INTO Installment(date, paymentId, amount)
+		VALUES (@InstallmentDate, @paymentID, @Installment_Amount);
 		SET @InstallmentDate = DATEADD(month, 6, @InstallmentDate);
 		SET @i = @i + 1;
 	END
 RETURN
 
 -- k) List the title(s) of accepted publication(s) per thesis.
--- CHECK THE GROUP BY AND BIT CHECK
 GO
 CREATE PROC AdminListAcceptPublication
 AS
@@ -254,16 +272,14 @@ AS
 RETURN
 
 -- l) Add courses and link courses to students.
-
--- DECIMAL PARAMETERS ????
 GO
 CREATE PROC AddCourse
-@courseCode VARCHAR(10), @creditHrs INT, @fees DECIMAL
+@courseCode VARCHAR(10), @creditHrs INT, @fees DECIMAL(8,2)
 AS
 	INSERT INTO Course VALUES (@fees, @creditHrs, @courseCode)
 RETURN
 
--- NonGucianStudentPayForCourse ??????
+-- NonGucianStudentPayForCourse ? Should we also add into this table ?
 GO
 CREATE PROC linkCourseStudent
 @courseID INT, @studentID INT
@@ -271,7 +287,6 @@ AS
 	INSERT INTO NonGucianStudentTakeCourse (sid, cid) VALUES (@studentID, @courseID)
 RETURN
 
--- GRADE DECIMAL ????
 GO
 CREATE PROC addStudentCourseGrade
 @courseID INT, @studentID INT, @grade DECIMAL (5,2)
@@ -282,35 +297,41 @@ AS
 RETURN
 
 -- m) View examiners and supervisor(s) names attending a thesis defense taking place on a certain date.
-
--- HOW TO GET SUPEVISOR ???
 GO
 CREATE PROC ViewExamSupDefense
 @defenseDate datetime
 AS
-	
+	SELECT Supervisor.first_name + ' ' + Supervisor.last_name as 'Supervisor Name', Examiner.name
+	FROM allStudentsRegisterThesis
+		INNER JOIN Thesis ON Thesis.serialNumber = allStudentsRegisterThesis.serial_no
+		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
+		INNER JOIN ExaminerEvaluateDefense ON ExaminerEvaluateDefense.date = Thesis.defenseDate
+		INNER JOIN Examiner ON ExaminerEvaluateDefense.examinerId = Examiner.id
+	WHERE
+		Thesis.defenseDate = @defenseDate
 RETURN
 
 -- 4
 
--- a) Evaluate a student’s progress report, and give evaluation value 0 to 3. CHECKED
+-- a) Evaluate a student’s progress report, and give evaluation value 0 to 3.
+-- CHECKED
 GO
-	CREATE PROC EvaluateProgressReport
-	@supervisorid INT,
-	@thesisserialno INT,
-	@progressreportno INT,
-	@evaluation INT
-	AS
-		IF (@evaluation in (0,1,2,3))
-		BEGIN
-			UPDATE GucianProgressReport
-			SET GUCianProgressReport.eval = @evaluation
-			WHERE @supervisorid = GUCianProgressReport.supid AND @thesisserialno = GUCianProgressReport.thesisserialnumber and @progressreportno = GUCianProgressReport.no;
+CREATE PROC EvaluateProgressReport
+@supervisorID INT,
+@thesisSerialNo INT,
+@progressReportNo INT,
+@evaluation INT
+AS
+	IF (@evaluation in (0,1,2,3))
+	BEGIN
+		UPDATE GucianProgressReport
+		SET GUCianProgressReport.eval = @evaluation
+		WHERE @supervisorID = GUCianProgressReport.supid AND @thesisSerialNo = GUCianProgressReport.thesisserialnumber and @progressReportNo = GUCianProgressReport.no;
 			
-			UPDATE NonGUCianProgressReport
-			SET NonGUCianProgressReport.eval = @evaluation
-			WHERE  NonGUCianProgressReport.supid = @supervisorid AND @thesisserialno = NonGUCianProgressReport.thesisserialnumber and @progressreportno = NonGUCianProgressReport.no
-		END
+		UPDATE NonGUCianProgressReport
+		SET NonGUCianProgressReport.eval = @evaluation
+		WHERE  NonGUCianProgressReport.supid = @supervisorID AND @thesisSerialNo = NonGUCianProgressReport.thesisserialnumber and @progressReportNo = NonGUCianProgressReport.no
+	END
 RETURN
 
 GO
@@ -319,7 +340,7 @@ EXEC StudentRegister 'Harry', 'Potter', 'HarryPotterPass', 'Gryffindor', 1, 'Har
 EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
 INSERT INTO GUCianStudentRegisterThesis VALUES (1,2,1);
 INSERT INTO GUCianProgressReport (sid, date, state, thesisSerialNumber, supid) VALUES (1,'10/10/2012',0,1,2);
-EXEC EvaluateProgressReport 2,1,5, 0;
+EXEC EvaluateProgressReport 2, 1, 1, 0;
 
 GO
 INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('Computer Science','PHD','Hacker', '1/3/2011','4/12/2018');
@@ -327,10 +348,11 @@ EXEC StudentRegister 'Draco', 'Malfoy', 'DracoMalfoyPass', 'Slytherin', 0, 'Drac
 EXEC SupervisorRegister 'Severus', 'Snape', 'SeverusSnapePass', 'Slytherin', 'SeverusSnapeEmail';
 INSERT INTO NonGUCianStudentRegisterThesis VALUES (3,2,2);
 INSERT INTO NonGUCianProgressReport (sid, date, state, thesisSerialNumber, supid) VALUES (3,'11/7/2012',0,2,2);
-EXEC EvaluateProgressReport 5,2,1, 0;
+EXEC EvaluateProgressReport 5, 2, 1, 0;
 
 
--- b) View all my students’s names and years spent in the thesis. CHECKED
+-- b) View all my students’s names and years spent in the thesis.
+-- CHECKED
 GO 
 CREATE PROC ViewSupStudentsYears
 @supervisorID INT
@@ -353,13 +375,15 @@ AS
 	AS AllStudents
 RETURN
 
-EXEC ViewSupStudentsYears 2;
+EXEC ViewSupStudentsYears 1;
 
--- c) View my profile. CHECKED
+-- c) View my profile and update my personal information.
+-- CHECKED
+	-- i)
 GO 
-	CREATE PROC SupViewProfile
-	@supervisorID INT
-	AS
+CREATE PROC SupViewProfile
+@supervisorID INT
+AS
 	SELECT * 
 	FROM Supervisor
 	WHERE Supervisor.id = @supervisorID
@@ -367,15 +391,26 @@ RETURN
 
 EXEC SupervisorRegister 'Remus', 'Lupin', 'RemusLupinPass', 'Gryffindor', 'RemusLupinEmail';
 EXEC SupViewProfile 2;
--- Update my personal information. SUPERVISOR HAS NAME IN SCHEMA BUT FIRSTNAME AND LASTNAME IN TABLES. CHECKED
+
+	-- ii)
+GO
+CREATE PROC UpdateSupProfile
+@supervisorID INT,
+@name VARCHAR(20),
+@faculty VARCHAR(20)
+AS
+	UPDATE Supervisor
+	SET Supervisor.first_name = @name, Supervisor.faculty = @faculty
+	WHERE Supervisor.id = @supervisorID
+RETURN
 
 GO
-	CREATE PROC UpdateSupProfile
-	@supervisorID INT,
-	@first_name VARCHAR(20),
-	@last_name VARCHAR(20),
-	@faculty VARCHAR(20)
-	AS
+CREATE PROC UpdateSupProfileFullName
+@supervisorID INT,
+@first_name VARCHAR(20),
+@last_name VARCHAR(20),
+@faculty VARCHAR(20)
+AS
 	UPDATE Supervisor
 	SET Supervisor.first_name = @first_name, Supervisor.last_name = @last_name, Supervisor.faculty = @faculty
 	WHERE Supervisor.id = @supervisorID
@@ -498,7 +533,8 @@ GO
 RETURN
 EXEC CancelThesis 1;
 EXEC CancelThesis 2;
--- h) QUESTION: WHERE IS THE GRADE INPUT. CHECKED
+-- h) Add a grade for a thesis.
+-- QUESTION: WHERE IS THE GRADE INPUT. CHECKED
 GO 
 	CREATE PROC AddGrade
 	@ThesisSerialNo INT,

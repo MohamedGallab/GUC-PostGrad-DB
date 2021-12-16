@@ -49,8 +49,19 @@ EXEC SupervisorRegister 'Filius', 'Flitwick', 'FiliusFlitwickPass', 'Ravenclaw',
 --EXEC SupervisorRegister 'Super firstname 1', 'Super lastname 1', 'Super password 1', 'Super faculty 1', 'Super email 1';
 
 -- insert Thesis
---INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
---VALUES ('thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1);
+INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+VALUES ('thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1);
+INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+VALUES ('thesis field 2', 'type 2', 'title 2', '2020-01-01', '2023-01-01', 4.0, 1);
+INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+VALUES ('thesis field 3', 'type 3', 'title 3', '2020-01-01', '2025-01-01', 4.0, 1);
+INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
+VALUES ('thesis field 4', 'type 4', 'title 4', '2020-01-01', '2021-01-01', 4.0, 1);
+
+insert into GUCianStudentRegisterThesis(serial_no, sid, supid) values (2,3,1);
+insert into NonGUCianStudentRegisterThesis(serial_no, sid, supid) values (4,7,1);
+
+
 GO
 CREATE PROC AddThesis
 @field VARCHAR(20), @type VARCHAR(10), @title VARCHAR(50), @startDate DATE, @endDate DATE, @grade DECIMAL(5,2), @noExtension INT
@@ -58,6 +69,11 @@ AS
 	INSERT INTO Thesis (field, type, title, startDate, endDate, grade, noExtension) 	
 	VALUES (@field, @type, @title, @startDate, @endDate, @grade, @noExtension);
 RETURN
+
+insert into GUCianStudentRegisterThesis values (1,2,1);
+declare @thesesCount int;
+exec AdminViewOnGoingTheses @thesesCount OUTPUT;
+print @thesesCount;
 
 GO
 EXEC AddThesis 'thesis field 1', 'type 1', 'title 1', '2020-01-01', '2021-01-01', 4.0, 1;
@@ -205,3 +221,5 @@ EXEC AddDefenseGrade @ThesisID, 'DefenseDate', grade;
 EXEC AddCommentsGrade @ThesisID, 'DefenseDate', 'comments';
 EXEC addPublication 'title', 'pubDateTime', 'host', 'place', accepted;
 EXEC linkPubThesis @PubID, @ThesisID;
+
+

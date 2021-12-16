@@ -1,4 +1,4 @@
-	CREATE DATABASE PostGradDB;
+CREATE DATABASE PostGradDB;
 
 GO
 
@@ -100,7 +100,7 @@ CREATE TABLE Thesis(
 	payment_id INT,
 	noExtension INT,
 	PRIMARY KEY(serialNumber),
-	FOREIGN KEY(payment_id) REFERENCES Payment ON UPDATE CASCADE
+	FOREIGN KEY(payment_id) REFERENCES Payment ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- Wagdy Entities
