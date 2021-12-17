@@ -87,7 +87,7 @@ RETURN
 
 -- b) add my mobile number(s).
 GO
-CREATE PROC addMobile
+CREATE PROC addMobile 
 @ID INT, @mobile_number VARCHAR(20)
 AS
 	-- if ID is in gucian table 
@@ -505,11 +505,12 @@ GO
 	CREATE PROC AddCommentsGrade
 	@ThesisSerialNo INT,
 	@DefenseDate DATETIME,
+	@examinerId INT,
 	@comments VARCHAR(300)
 	AS
 	UPDATE ExaminerEvaluateDefense
 	SET comment = @comments
-	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate
+	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate AND ExaminerEvaluateDefense.examinerId = @examinerId
 RETURN
 
 

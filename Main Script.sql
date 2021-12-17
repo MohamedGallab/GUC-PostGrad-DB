@@ -1,5 +1,30 @@
 USE PostGradDB;
+-- 1
+-- a)
 
+-- i) student
+EXEC StudentRegister 'Abd El Ghafour', 'El Boray', '123456','MET',1,'barbora@gmail.com','Wekalet El Balah, St 2, Apt 5';
+EXEC StudentRegister 'Fatma', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
+
+SELECT * FROM GucianStudent;
+SELECT * FROM NonGucianStudent;
+-- ii) supervisor
+EXEC SupervisorRegister 'Tenen', 'Elkemya', 'loveChemistry33&','Pharmacy', 'ahmedabdelwaged@hotmail.com';
+
+SELECT * FROM Supervisor;
+-- 2
+
+-- a)
+DECLARE @Success BIT;
+EXEC userLogin '17','as@45asfg%!gAGAs', @Success OUTPUT;
+PRINT (@Success);
+
+-- b) 
+EXEC addMobile '16', '01020304050';
+EXEC addMobile '17', '01020304055';
+
+SELECT * FROM GUCStudentPhoneNumber
+SELECT * FROM NonGUCStudentPhoneNumber
 -- 3
 
 -- a)
@@ -105,3 +130,16 @@ EXEC AddExaminer 1,'10/7/2021', 'ALBUS', 1, 'MANG';
 -- i)
 -- j)
 -- k)
+
+-- 5) 
+
+-- a)
+
+SELECT * FROM Thesis;
+INSERT INTO Defense (serialNumber,date,location) values (1,'2020/12/9 12:12:12','Elmeshmesh');
+SELECT * FROM Defense;
+EXEC AddDefenseGrade 1, '2020/12/9 12:12:12', 5.2;
+
+-- b)
+EXEC AddExaminer
+	'1', '2020/12/9 12:12:12',	'Samo',	0, 	'Cringe'
