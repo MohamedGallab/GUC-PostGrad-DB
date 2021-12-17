@@ -141,5 +141,7 @@ SELECT * FROM Defense;
 EXEC AddDefenseGrade 1, '2020/12/9 12:12:12', 5.2;
 
 -- b)
-EXEC AddExaminer
-	'1', '2020/12/9 12:12:12',	'Samo',	0, 	'Cringe'
+INSERT Into ExaminerEvaluateDefense (date,serialNo,examinerId) values ('2020/12/9 12:12:12',1,19)
+EXEC AddCommentsGrade 1,'2020/12/9 12:12:12',19, 'very very very very bad'
+select* from ExaminerEvaluateDefense
+
