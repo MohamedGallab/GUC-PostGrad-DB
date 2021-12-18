@@ -317,11 +317,11 @@ GO
 	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
 
 	-- 1 defenses with old examiners and publication
-	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @DefenseLocation = 'training grounds';
+	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @DefenseLocation = 'training grounds';
 
-	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2021-12-09', @ThesisID, @examiner_id1);
-	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @examinerId = @examiner_id1, @comments = 'at least this one isnt stolen...or is it???';
+	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2022-6-09', @ThesisID, @examiner_id1);
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @grade = 100.00;
+	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @examinerId = @examiner_id1, @comments = 'at least this one isnt stolen...or is it???';
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2022-6-09', @ThesisID, @examiner_id2);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @grade = 100.00;
