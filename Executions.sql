@@ -1,30 +1,26 @@
 USE PostGradDB;
+
 -- 1
+
 -- a)
 
 -- i) student
 EXEC StudentRegister 'Abd El Ghafour', 'El Boray', '123456','MET',1,'barbora@gmail.com','Wekalet El Balah, St 2, Apt 5';
 EXEC StudentRegister 'Fatma', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
 
-SELECT * FROM GucianStudent;
-SELECT * FROM NonGucianStudent;
 -- ii) supervisor
 EXEC SupervisorRegister 'Tenen', 'Elkemya', 'loveChemistry33&','Pharmacy', 'ahmedabdelwaged@hotmail.com';
 
-SELECT * FROM Supervisor;
 -- 2
 
 -- a)
 DECLARE @Success BIT;
 EXEC userLogin '17','as@45asfg%!gAGAs', @Success OUTPUT;
-PRINT (@Success);
 
 -- b) 
 EXEC addMobile '16', '01020304050';
 EXEC addMobile '17', '01020304055';
 
-SELECT * FROM GUCStudentPhoneNumber
-SELECT * FROM NonGUCStudentPhoneNumber
 -- 3
 
 -- a)
@@ -39,39 +35,37 @@ EXEC AdminViewAllTheses;
 -- d)
 DECLARE @thesesCountOut INT;
 EXEC AdminViewOnGoingTheses @thesesCount = @thesesCountOut OUTPUT;
-PRINT (@thesesCountOut);
 
 -- e)
 EXEC AdminViewStudentThesisBySupervisor;
 
 -- f)
-EXEC AdminListNonGucianCourse 2;
+EXEC AdminListNonGucianCourse ;
+
 -- g)
-EXEC AdminUpdateExtension 1;
+EXEC AdminUpdateExtension @ThesisSerialNo = 1;
+
 -- h)
-DECLARE @Success BIT;
-EXEC AdminIssueThesisPayment 2, 200000, 6, 0, @Success OUTPUT;
+DECLARE @SuccessOut BIT;
+EXEC AdminIssueThesisPayment @ThesisSerialNo = 2, @amount = 200000, @noOfInstallments = 6, @fundPercentage = 0, @Success = @SuccessOut OUTPUT;
+
 -- i)
-EXEC AdminViewStudentProfile 1;
+EXEC AdminViewStudentProfile @sid = 1;
 
 -- j)
-EXEC AdminIssueInstallPayment 2, '2020-12-01';
-
-DECLARE @no_installments INT = 
-		(SELECT Payment.no_installments
-		FROM Payment
-		WHERE Payment.id = 1)
-print(@no_installments)
-
-delete from Installment;
+EXEC AdminIssueInstallPayment @paymentID = 2, @InstallStartDate = '2020-12-01';
 
 -- k)
 EXEC AdminListAcceptPublication;
+
 -- l)
-	-- DONE
+EXEC AddCourse @courseCode = 'CSEN 501', @creditHrs = 8, @fees = 12000
+
+EXEC linkCourseStudent @courseID = 1, @studentID = 1
+
+EXEC addStudentCourseGrade @courseID = 1, @studentID = 1, @grade = 100.0
+
 -- m)
-select Thesis.defenseDate
-from Thesis
 EXEC ViewExamSupDefense '2021-10-07 00:00:00.000';
 
 -- 4
@@ -127,9 +121,6 @@ EXEC AddExaminer 1,'10/7/2021', 'ALBUS', 1, 'MANG';
 
 -- g)
 -- h)
--- i)
--- j)
--- k)
 
 -- 5) 
 
