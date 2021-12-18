@@ -19,10 +19,11 @@ INSERT INTO Admin VALUES (SCOPE_IDENTITY());
 --GO
 --EXEC InsertAdmin 'AlbusDumbledoreEmail', 'AlbusDumbledorePass';
 --EXEC InsertAdmin 'MinervaMcGonagallEmail', 'MinervaMcGonagallPass';
+--EXEC InsertAdmin 'MinervaMcGonagallEmail', 'MinervaMcGonagallPass'; 
 
 GO
 -- insert Students 4 gucian, 3 nongucian, 2 supervisors, 2 examiners, 2 admin
-EXEC StudentRegister 'Harry', 'Potter', 'HarryPotterPass', 'Gryffindor', 1, 'HarryPotterPassEmail ', '4 Privet Drive';
+EXEC StudentRegister 'Harry', 'Potter', 'HarryPotterPass', 'Gryffindor', 1, 'HarryPotterPassEmail', '4 Privet Drive';
 EXEC StudentRegister 'Ronald', 'Weasley', 'RonaldWeasleyPass', 'Gryffindor', 1, 'RonaldWeasleyPassEmail', 'The Burrow';
 EXEC StudentRegister 'Hermione', 'Granger', 'HermioneGrangerPass', 'Gryffindor', 1, 'HermioneGrangerEmail', 'Hampstead Garden Suburb';
 EXEC StudentRegister 'Neville ', 'Longbottom ', 'NevilleLongbottomPass', 'Gryffindor', 1, 'NevilleLongbottomEmail', 'The Leaky Cauldron';
