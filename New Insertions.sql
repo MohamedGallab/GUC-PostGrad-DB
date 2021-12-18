@@ -2,7 +2,9 @@ USE PostGradDB;
 
 -- Insert 2 Admins
 	INSERT INTO PostGradUser (email, password) VALUES ('AlbusDumbledoreEmail', 'DumbledorePass');
+	INSERT INTO Admin VALUES (IDENT_CURRENT ('PostGradUser'));
 	INSERT INTO PostGradUser (email, password) VALUES ('MinervaMcGonagallEmail', 'MinervaPass');
+	INSERT INTO Admin VALUES (IDENT_CURRENT ('PostGradUser'));
 
 GO
 	-- all declares
@@ -43,7 +45,6 @@ GO
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 50000, @noOfInstallments = 2,
 		@fundPercentage = 100, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
-	print(1)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
@@ -51,7 +52,6 @@ GO
 
 	INSERT INTO GUCianStudentRegisterThesis(sid, supid, serial_no) VALUES(@StudentID, @SupervisorID ,@ThesisID);
 	
-	print (@StudentID);
 	EXEC AddGrade @ThesisSerialNo = @ThesisID, @ThesisGrade = 100.00;
 
 	-- 2 progress reports
@@ -96,7 +96,6 @@ GO
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
 		@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
-	print(2)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
@@ -147,7 +146,6 @@ GO
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
 	@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
-	print(3)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
@@ -180,7 +178,6 @@ GO
 	
 	INSERT INTO PAYMENT (amount, no_Installments, fundPercentage) VALUES (@Fees, 4, 100);
 	SET @CoursePaymentId = IDENT_CURRENT ('Payment');
-	print(4)
 	EXEC AdminIssueInstallPayment @paymentID = @CoursePaymentId, @InstallStartDate = '2020-01-01';
 
 	INSERT INTO NonGucianStudentPayForCourse VALUES (@StudentID, @CoursePaymentId, @CourseID);
