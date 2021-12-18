@@ -43,14 +43,11 @@ GO
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 50000, @noOfInstallments = 2,
 		@fundPercentage = 100, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	print(1)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
 	EXEC AdminUpdateExtension @ThesisID;
-
-	print (@StudentID);
-	print (@SupervisorID);
-	print (@ThesisID);
 
 	INSERT INTO GUCianStudentRegisterThesis(sid, supid, serial_no) VALUES(@StudentID, @SupervisorID ,@ThesisID);
 	
@@ -93,12 +90,13 @@ GO
 
 
 	-- thesis 2 with 1 progress report
-	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', 'endDate');
+	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01');
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
-	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 'amount', @noOfInstallments = 'noOfInstallments',
-	@fundPercentage = 'fundPercentage', @Success = @SuccessThesisPayment OUTPUT;
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
+		@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	print(2)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
@@ -127,7 +125,7 @@ GO
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @grade = 100.00;
 	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @examinerId = @examiner_id2, @comments = 'comments';
 
-	EXEC addPublication @title = 'title', @pubDate = 'pubDateTime', @host = 'host', @place = 'place', @accepted = 1;
+	EXEC addPublication @title = 'title', @pubDate = '2021-07-07', @host = 'host', @place = 'place', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
 	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
 
@@ -135,7 +133,7 @@ GO
 
 	-- none gucian Studnet with 1 phones and 1 thesis and 1 progress reports and 1 defenses
 	EXEC StudentRegister @first_name = 'Harry' , @last_name = 'Potter',@password = 'HarryPotterPass',
-	@faculty = 'Gryffindor', @Gucian = 1, @email = 'HarryPotterPassEmail', @address = '4 Privet Drive';
+	@faculty = 'Gryffindor', @Gucian = 0, @email = 'HarryPotterPassEmail', @address = '4 Privet Drive';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 
 	-- phones
@@ -143,12 +141,13 @@ GO
 
 	-- thesis 1, 2 reports, 2 defenses, 1 pub
 	-- thesis 1 & grade
-	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', 'endDate');
+	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01');
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
-	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 'amount', @noOfInstallments = 'noOfInstallments',
-	@fundPercentage = 'fundPercentage', @Success = @SuccessThesisPayment OUTPUT;
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
+	@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	print(3)
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
@@ -181,7 +180,7 @@ GO
 	
 	INSERT INTO PAYMENT (amount, no_Installments, fundPercentage) VALUES (@Fees, 4, 100);
 	SET @CoursePaymentId = IDENT_CURRENT ('Payment');
-
+	print(4)
 	EXEC AdminIssueInstallPayment @paymentID = @CoursePaymentId, @InstallStartDate = '2020-01-01';
 
 	INSERT INTO NonGucianStudentPayForCourse VALUES (@StudentID, @CoursePaymentId, @CourseID);
@@ -195,7 +194,7 @@ GO
 	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-09', @examinerId = @examiner_id1, @comments = 'comments';
 
 
-	EXEC addPublication @title = 'title', @pubDate = 'pubDateTime', @host = 'host', @place = 'place', @accepted = 1;
+	EXEC addPublication @title = 'title', @pubDate = '2021-07-07', @host = 'host', @place = 'place', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
 	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
 GO
