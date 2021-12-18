@@ -145,3 +145,47 @@ INSERT Into ExaminerEvaluateDefense (date,serialNo,examinerId) values ('2020/12/
 EXEC AddCommentsGrade 1,'2020/12/9 12:12:12',19, 'very very very very bad'
 select* from ExaminerEvaluateDefense
 
+
+
+--6)
+--a)
+EXEC viewMyProfile 1
+EXEC viewMyProfile 2
+--b)
+EXEC editMyProfile 1, 'Draco', 'Malfoy', 'DracoMalfoyPass', 'DracoMalfoyEmail', ' The Malfoy Mansion', 'Phd'
+--c)
+EXEC addUndergradID 1, '4923423'
+--d)
+EXEC StudentRegister 'hamada', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
+EXEC StudentRegister 'mohamed', 'Koshary', 'mohpass','IET',0,'a5okoshar@yahoo.com','Wekalet El Balah, St 2, Apt 5';
+EXEC StudentRegister 'omar', 'Koshary', 'omarpass','mecha',0,'a5oa5okoshary@yahoo.com','Wekalet El Balah, St 2, Apt 5';
+
+EXEC AddCourse 'CSEN 1', 8, 1000;
+EXEC linkCourseStudent 1,6;
+EXEC addStudentCourseGrade 1,6,100;
+
+EXEC AddCourse 'MATH 1', 6, 2000;
+EXEC linkCourseStudent 2,6;
+EXEC addStudentCourseGrade 2,6,55;
+
+EXEC ViewCoursesGrades 6
+--e
+	--i)
+
+	--ii)
+
+	--iii)
+
+	--iv)
+
+--f
+	--i)
+
+	--ii)
+
+--g)
+
+--h)
+
+--i)
+
