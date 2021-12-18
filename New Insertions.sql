@@ -28,10 +28,12 @@ GO
 	SET @SupervisorID = IDENT_CURRENT ('PostGradUser');
 
 	-- gucian Studnet with 2 phones and 2 thesis and 3 progress reports and 3 defenses
-	EXEC StudentRegister @first_name = 'Harry' , @last_name = 'Potter',@password = 'HarryPotterPass',
+	EXEC StudentRegister @first_name = 'Harry' , @last_name = 'Potter', @password = 'HarryPotterPass',
 		@faculty = 'Gryffindor', @Gucian = 1, @email = 'HarryPotterPassEmail', @address = '4 Privet Drive';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 	EXEC  addUndergradID @studentID = @StudentID, @undergradID = 111;
+
+	UPDATE GucianStudent set GPA = 4.00;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = 'Harry Mobile 1';
@@ -39,7 +41,7 @@ GO
 
 	-- thesis 1, 2 reports, 2 defenses, 1 pub
 	-- thesis 1 & grade
-	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', '2021-01-01');
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('field', 'type', 'title', '2020-01-01', '2021-01-01', 0);
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 50000, @noOfInstallments = 2,
@@ -90,7 +92,7 @@ GO
 
 
 	-- thesis 2 with 1 progress report
-	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01');
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01', 0);
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
@@ -135,13 +137,16 @@ GO
 	@faculty = 'Gryffindor', @Gucian = 0, @email = 'HarryPotterPassEmail', @address = '4 Privet Drive';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 
+	UPDATE NonGucianStudent set GPA = 3.00;
+
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = 'Harry Mobile 1';
 
 	-- thesis 1, 2 reports, 2 defenses, 1 pub
 	-- thesis 1 & grade
-	INSERT INTO Thesis (field, type, title, startDate, endDate) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01');
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('field', 'type', 'title', '2020-01-01', '2022-01-01', 0);
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
+
 
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
 	@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;

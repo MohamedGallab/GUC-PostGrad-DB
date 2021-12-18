@@ -250,8 +250,8 @@ AS
 
 	WHILE @i < @no_installments
 	BEGIN
-		INSERT INTO Installment(date, paymentId, amount)
-		VALUES (@InstallmentDate, @paymentID, @Installment_Amount);
+		INSERT INTO Installment(date, paymentId, amount, done)
+		VALUES (@InstallmentDate, @paymentID, @Installment_Amount, 0);
 		SET @InstallmentDate = DATEADD(month, 6, @InstallmentDate);
 		SET @i = @i + 1;
 	END
