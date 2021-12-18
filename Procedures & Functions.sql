@@ -195,7 +195,7 @@ RETURN
 -- h) Issue a thesis payment.
 GO
 CREATE PROC AdminIssueThesisPayment
-@ThesisSerialNo INT, @amount DECIMAL(8,2), @noOfInstallments INT, @fundPercentage DECIMAL,
+@ThesisSerialNo INT, @amount DECIMAL(8,2), @noOfInstallments INT, @fundPercentage DECIMAL(5,2),
 @Success BIT OUTPUT
 AS
 	IF (
