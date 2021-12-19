@@ -164,43 +164,31 @@ select* from ExaminerEvaluateDefense
 
 --6)
 --a)
-EXEC viewMyProfile 1
-EXEC viewMyProfile 2
+EXEC viewMyProfile 9
+EXEC viewMyProfile 12
 --b)
-EXEC editMyProfile 1, 'Draco', 'Malfoy', 'DracoMalfoyPass', 'DracoMalfoyEmail', ' The Malfoy Mansion', 'Phd'
+EXEC editMyProfile 9, 'lord', 'seventh', 'finallyHokage', 'rasenganAndDhadowGotMeHere@gmail.com', ' The uzumaki residence', 'Phd'
 --c)
-EXEC addUndergradID 1, '4923423'
+EXEC addUndergradID 9, '4923423'
 --d)
-EXEC StudentRegister 'hamada', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
-EXEC StudentRegister 'mohamed', 'Koshary', 'mohpass','IET',0,'a5okoshar@yahoo.com','Wekalet El Balah, St 2, Apt 5';
-EXEC StudentRegister 'omar', 'Koshary', 'omarpass','mecha',0,'a5oa5okoshary@yahoo.com','Wekalet El Balah, St 2, Apt 5';
-
-EXEC AddCourse 'CSEN 1', 8, 1000;
-EXEC linkCourseStudent 1,6;
-EXEC addStudentCourseGrade 1,6,100;
-
-EXEC AddCourse 'MATH 1', 6, 2000;
-EXEC linkCourseStudent 2,6;
-EXEC addStudentCourseGrade 2,6,55;
-
-EXEC ViewCoursesGrades 6
+EXEC ViewCoursesGrades 12
 --e
 	--i)
-
+	EXEC ViewCoursePaymentsInstall 12
 	--ii)
-
+	EXEC ViewThesisPaymentsInstall 9
 	--iii)
-
+	EXEC ViewUpcomingInstallments 12
 	--iv)
-
+	EXEC ViewMissedInstallments 9
 --f
 	--i)
-
+	EXEC AddProgressReport 5, '2022-11-09'
 	--ii)
-
+	EXEC FillProgressReport 5, 10, 75, 'i am gonna pass out cause this uses more chakra than what i get from the ramen'
 --g)
-
+EXEC ViewEvalProgressReport 6, 2
 --h)
-
+EXEC addPublication 'i think i did it too well,they wanna make me hokage now' ,'2024-07-07' ,'konoha news' ,'konoha' ,1
 --i)
-
+EXEC linkPubThesis 10, 5
