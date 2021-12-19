@@ -72,19 +72,19 @@ USE PostGradDB;
 	-- non gucian
 	EXEC AdminViewStudentProfile @sid = 7;
 
--- j) --add an extra test payment
+-- j)
 	EXEC AdminIssueInstallPayment @paymentID = 2, @InstallStartDate = '2020-12-01';
 
--- k) --add thesis with 2 publications accepted
+-- k)
 	EXEC AdminListAcceptPublication;
 	
 
 -- l)
-	EXEC AddCourse @courseCode = 'CSEN 501', @creditHrs = 8, @fees = 12000
+	EXEC AddCourse @courseCode = 'TST 501', @creditHrs = 9, @fees = 92000
 
-	EXEC linkCourseStudent @courseID = 1, @studentID = 1
+	EXEC linkCourseStudent @courseID = 6, @studentID = 7
 
-	EXEC addStudentCourseGrade @courseID = 1, @studentID = 1, @grade = 100.0
+	EXEC addStudentCourseGrade @courseID = 6, @studentID = 7, @grade = 100.0
 
 -- m)
 	EXEC ViewExamSupDefense '2012-05-09';
@@ -127,12 +127,11 @@ USE PostGradDB;
 
 -- a)
 
-EXEC AddDefenseGrade 1, '2020/12/9 12:12:12', 5.2;
+EXEC AddDefenseGrade 1, '2013-08-09 00:00:00.000', 5.2;
 
 -- b)
-INSERT Into ExaminerEvaluateDefense (date,serialNo,examinerId) values ('2020/12/9 12:12:12',1,19)
-EXEC AddCommentsGrade 1,'2020/12/9 12:12:12',19, 'very very very very bad'
-select* from ExaminerEvaluateDefense
+
+EXEC AddCommentsGrade 1, '2013-08-09 00:00:00.000', 'me work';
 
 
 

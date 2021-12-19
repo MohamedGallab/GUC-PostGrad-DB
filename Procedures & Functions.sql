@@ -1,4 +1,4 @@
-USE PostGradDB
+USE PostGradDB;
 
 -- Custom Procedures & Functions & Views
 
@@ -507,7 +507,6 @@ GO
 	CREATE PROC AddCommentsGrade
 	@ThesisSerialNo INT,
 	@DefenseDate DATETIME,
-	@examinerId INT,
 	@comments VARCHAR(300)
 	AS
 	UPDATE ExaminerEvaluateDefense
@@ -525,7 +524,7 @@ GO
 	AS
 	UPDATE ExaminerEvaluateDefense
 	SET comment = @comments
-	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate
+	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate AND ExaminerEvaluateDefense.examinerId = @examinerId
 RETURN
 
 -- 6
