@@ -500,7 +500,7 @@ GO
 RETURN
 
 -- b) Add comment for a defense. 
-
+-- we added examiner id because in the table examiner evaluates defense, examiner id is part of the primary key.
 GO 
 	CREATE PROC AddCommentsGrade
 	@ThesisSerialNo INT,
