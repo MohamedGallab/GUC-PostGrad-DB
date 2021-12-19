@@ -95,7 +95,7 @@ GO
 
 
 	-- thesis 2 with 1 progress report
-	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('Defence Against the Dark Arts', 'PHD', 'The Cruciatus Curse', '2019-07-03', '2022-01-09', 0);
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('Dark Arts Defence', 'PHD', 'The Cruciatus Curse', '2019-07-03', '2022-01-09', 0);
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
 	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 100, @noOfInstallments = 3,
