@@ -442,7 +442,7 @@ GO
 	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('Philosiphy', 'Phd', 'Effects of catgrils on the psyche of the fragile', '2021-11-10', '2023-11-10', 0);
 	SET @ThesisID = IDENT_CURRENT ('Thesis');
 
-	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 15000000, @noOfInstallments = 3,
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 150000, @noOfInstallments = 3,
 		@fundPercentage = 50, @Success = @SuccessThesisPayment OUTPUT;
 	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2021-11-01';
