@@ -598,3 +598,5 @@ GO
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
 	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
 GO
+
+UPDATE Installment SET done = 1 WHERE date < '2021-01-01';

@@ -447,7 +447,7 @@ GO
 	DECLARE @evalLastReport INT
 	IF EXISTS(SELECT * FROM GUCianStudentRegisterThesis WHERE GUCianStudentRegisterThesis.serial_no = @ThesisSerialNo)
 	BEGIN
-		SELECT Top 1 @evalLastReport = eval
+		SELECT TOP 1 @evalLastReport = eval
 		FROM Thesis
 			INNER JOIN GUCianProgressReport ON GUCianProgressReport.thesisSerialNumber = Thesis.serialNumber
 			WHERE @ThesisSerialNo = Thesis.serialNumber
@@ -455,7 +455,7 @@ GO
 	END
 	ELSE
 	BEGIN
-		SELECT Top 1 @evalLastReport = eval
+		SELECT TOP 1 @evalLastReport = eval
 		FROM Thesis
 			INNER JOIN NonGUCianProgressReport ON NonGUCianProgressReport.thesisSerialNumber = Thesis.serialNumber
 			WHERE @ThesisSerialNo = Thesis.serialNumber
