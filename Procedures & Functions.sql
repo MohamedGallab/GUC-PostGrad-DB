@@ -173,7 +173,7 @@ GO
 CREATE PROC AdminListNonGucianCourse
 @courseID INT
 AS
-	SELECT NonGucianStudent.firstname + ' ' + NonGucianStudent.lastname, Course.courseCode, NonGucianStudentTakeCourse.grade
+	SELECT NonGucianStudent.firstname + ' ' + NonGucianStudent.lastname as 'name', Course.courseCode, NonGucianStudentTakeCourse.grade
 	FROM 
 		NonGucianStudentTakeCourse
 		INNER JOIN NonGucianStudent ON NonGucianStudentTakeCourse.sid = NonGucianStudent.id
@@ -261,14 +261,14 @@ RETURN
 GO
 CREATE PROC AdminListAcceptPublication
 AS
-	SELECT Thesis.title, Publication.title
+	SELECT Thesis.title as 'Thesis Title', Publication.title as 'Publication Title'
 	FROM
 		ThesisHasPublication
 		INNER JOIN Thesis ON ThesisHasPublication.serialNo = Thesis.serialNumber
 		INNER JOIN Publication ON Publication.id = ThesisHasPublication.pubid
 	WHERE
 		Publication.accepted = 1
-	GROUP BY Thesis.title, Publication.title
+	GROUP BY Thesis.serialNumber ,Thesis.title, Publication.title
 RETURN
 
 -- l) Add courses and link courses to students.
@@ -305,10 +305,11 @@ AS
 	FROM allStudentsRegisterThesis
 		INNER JOIN Thesis ON Thesis.serialNumber = allStudentsRegisterThesis.serial_no
 		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
-		INNER JOIN ExaminerEvaluateDefense ON ExaminerEvaluateDefense.date = Thesis.defenseDate
+		INNER JOIN Defense ON Thesis.serialNumber = Defense.serialNumber
+		INNER JOIN ExaminerEvaluateDefense ON ExaminerEvaluateDefense.date = Defense.date
 		INNER JOIN Examiner ON ExaminerEvaluateDefense.examinerId = Examiner.id
 	WHERE
-		Thesis.defenseDate = @defenseDate
+		Defense.date = @defenseDate
 RETURN
 
 -- 4
@@ -469,8 +470,7 @@ GO
 			DELETE FROM Thesis WHERE THESIS.serialNumber = @ThesisSerialNo
 	END
 RETURN
-EXEC CancelThesis 1;
-EXEC CancelThesis 2;
+
 -- h) Add a grade for a thesis.
 -- QUESTION: WHERE IS THE GRADE INPUT. CHECKED
 GO 
@@ -483,7 +483,7 @@ GO
 	WHERE @ThesisSerialNo = Thesis.serialNumber
 RETURN
 
-EXEC AddGrade 1, 4;
+
 	
 -- 5
 -- a) Add grade for a defense.

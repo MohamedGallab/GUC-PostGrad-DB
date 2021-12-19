@@ -5,68 +5,89 @@ USE PostGradDB;
 -- a)
 
 -- i) student
-EXEC StudentRegister 'Abd El Ghafour', 'El Boray', '123456','MET',1,'barbora@gmail.com','Wekalet El Balah, St 2, Apt 5';
-EXEC StudentRegister 'Fatma', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
+	EXEC StudentRegister 'Abd El Ghafour', 'El Boray', '123456','MET',1,'barbora@gmail.com','Wekalet El Balah, St 2, Apt 5';
+	EXEC StudentRegister 'Fatma', 'Koshary', 'as@45asfg%!gAGAs','Pharmacy',0,'zawgatabdelghafourelboray@yahoo.com','Wekalet El Balah, St 2, Apt 5';
 
 -- ii) supervisor
-EXEC SupervisorRegister 'Tenen', 'Elkemya', 'loveChemistry33&','Pharmacy', 'ahmedabdelwaged@hotmail.com';
+	EXEC SupervisorRegister 'Tenen', 'Elkemya', 'loveChemistry33&','Pharmacy', 'ahmedabdelwaged@hotmail.com';
 
 -- 2
 
 -- a)
-DECLARE @Success BIT;
-EXEC userLogin '17','as@45asfg%!gAGAs', @Success OUTPUT;
+	-- correct password
+	DECLARE @Success BIT;
+	EXEC userLogin '1','wrongPassword', @Success OUTPUT;
+	print(@Success);
+
+	-- false password
+	DECLARE @Success BIT;
+	EXEC userLogin '1','DumbledorePass', @Success OUTPUT;
+	PRINT(@Success);
 
 -- b) 
-EXEC addMobile '16', '01020304050';
-EXEC addMobile '17', '01020304055';
+	-- gucian
+	EXEC addMobile '4', '01020304050';
+	-- nongucian
+	EXEC addMobile '7', '01020304055';
 
 -- 3
 
 -- a)
-EXEC AdminListSup;
+	EXEC AdminListSup;
 
 -- b)
-EXEC AdminViewSupervisorProfile @supId = 3;
+	EXEC AdminViewSupervisorProfile @supId = 3;
 
 -- c)
-EXEC AdminViewAllTheses;
+	EXEC AdminViewAllTheses;
 
 -- d)
-DECLARE @thesesCountOut INT;
-EXEC AdminViewOnGoingTheses @thesesCount = @thesesCountOut OUTPUT;
-
+	DECLARE @thesesCountOut INT;
+	EXEC AdminViewOnGoingTheses @thesesCount = @thesesCountOut OUTPUT;
+	PRINT @thesesCountOut;
 -- e)
-EXEC AdminViewStudentThesisBySupervisor;
+	EXEC AdminViewStudentThesisBySupervisor;
 
 -- f)
-EXEC AdminListNonGucianCourse ;
+	EXEC AdminListNonGucianCourse 1;
 
 -- g)
-EXEC AdminUpdateExtension @ThesisSerialNo = 1;
+	EXEC AdminUpdateExtension @ThesisSerialNo = 1;
 
 -- h)
-DECLARE @SuccessOut BIT;
-EXEC AdminIssueThesisPayment @ThesisSerialNo = 2, @amount = 200000, @noOfInstallments = 6, @fundPercentage = 0, @Success = @SuccessOut OUTPUT;
+	-- successful
+	DECLARE @SuccessOut BIT;
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = 1, @amount = 9900, @noOfInstallments = 3, @fundPercentage = 25, @Success = @SuccessOut OUTPUT;
+	PRINT @SuccessOut
+	
+	-- unsuccessful
+	DECLARE @SuccessOut BIT;
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = 1000000000000, @amount = 9900, @noOfInstallments = 3, @fundPercentage = 25, @Success = @SuccessOut OUTPUT;
+	PRINT @SuccessOut
 
 -- i)
-EXEC AdminViewStudentProfile @sid = 1;
+	-- gucian
+	EXEC AdminViewStudentProfile @sid = 4;
 
--- j)
-EXEC AdminIssueInstallPayment @paymentID = 2, @InstallStartDate = '2020-12-01';
+	-- non gucian
+	EXEC AdminViewStudentProfile @sid = 7;
 
--- k)
-EXEC AdminListAcceptPublication;
+-- j) --add an extra test payment
+	EXEC AdminIssueInstallPayment @paymentID = 2, @InstallStartDate = '2020-12-01';
+
+-- k) --add thesis with 2 publications accepted
+	EXEC AdminListAcceptPublication;
+	
 
 -- l)
-EXEC AddCourse @courseCode = 'CSEN 501', @creditHrs = 8, @fees = 12000
+	EXEC AddCourse @courseCode = 'CSEN 501', @creditHrs = 8, @fees = 12000
 
-EXEC linkCourseStudent @courseID = 1, @studentID = 1
+	EXEC linkCourseStudent @courseID = 1, @studentID = 1
 
-EXEC addStudentCourseGrade @courseID = 1, @studentID = 1, @grade = 100.0
+	EXEC addStudentCourseGrade @courseID = 1, @studentID = 1, @grade = 100.0
 
 -- m)
-EXEC ViewExamSupDefense '2021-10-07 00:00:00.000';
+	EXEC ViewExamSupDefense '2012-05-09';
 
 -- 4
 -- a)
@@ -120,7 +141,10 @@ EXEC AddDefenseNonGucian 2, '12/17/2021', 'BERLIN';
 EXEC AddExaminer 1,'10/7/2021', 'ALBUS', 1, 'MANG';
 
 -- g)
+EXEC CancelThesis 1;
+EXEC CancelThesis 2;
 -- h)
+EXEC AddGrade 1, 4;
 
 -- 5) 
 
