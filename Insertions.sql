@@ -84,13 +84,13 @@ GO
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-05-09', @ExaminerName = 'Rolanda Hooch', @National = 1, @fieldOfWork = 'Flying';
 	set @examiner_id1 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-05-09', @grade = 95.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-05-09', @examinerId = @examiner_id1, @comments = 'More info is needed';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-05-09', @examinerId = @examiner_id1, @comments = 'More info is needed';
 
 	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2013-08-09', @DefenseLocation = 'Dumbledore Office Tower';
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2013-08-09', @ExaminerName = 'Dolores Umbridge', @National = 0, @fieldOfWork = 'fieldOfWork';
 	set @examiner_id2 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2013-08-09', @grade = 97.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2013-08-09', @examinerId = @examiner_id2, @comments = 'Perfect Job';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2013-08-09', @examinerId = @examiner_id2, @comments = 'Perfect Job';
 
 	EXEC addPublication @title = 'Relations of the Patronus', @pubDate = '2013-11-10', @host = 'Dumbledore', @place = 'Divination', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -128,11 +128,11 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2020-06-09', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @grade = 75.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @examinerId = @examiner_id1, @comments = 'Lacks the magical info';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @examinerId = @examiner_id1, @comments = 'Lacks the magical info';
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2020-06-09', @ThesisID, @examiner_id2);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @grade = 90.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @examinerId = @examiner_id2, @comments = 'Accurate info medical wise';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2020-06-09', @examinerId = @examiner_id2, @comments = 'Accurate info medical wise';
 
 	EXEC addPublication @title = 'Effect of the Cruciatus curse', @pubDate = '2021-05-07', @host = 'Hedwig', @place = 'Owlery', @accepted = 0;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -203,7 +203,7 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2021-12-08', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-08', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-08', @examinerId = @examiner_id1, @comments = 'Well presented';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2021-12-08', @examinerId = @examiner_id1, @comments = 'Well presented';
 
 
 	EXEC addPublication @title = 'The Luck by Liquid Luck', @pubDate = '2022-07-07', @host = 'Sybill Trelawney', @place = 'Astronomy Tower', @accepted = 1;
@@ -287,14 +287,14 @@ GO
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-06-09', @ExaminerName = 'iruka umino', @National = 0, @fieldOfWork = 'academy teacher';
 	set @examiner_id2 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-06-09', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-06-09', @examinerId = @examiner_id2, @comments = 'how did you learn a forbidden jutsu literally 10 minutes apart in the same episode...you kinda sus';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-06-09', @examinerId = @examiner_id2, @comments = 'how did you learn a forbidden jutsu literally 10 minutes apart in the same episode...you kinda sus';
 
 	
 	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-04-20', @DefenseLocation = 'chunin exams arena';
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-04-20', @ExaminerName = 'hayate gekko', @National = 1, @fieldOfWork = 'proctor';
 	set @examiner_id1 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-04-20', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-04-20', @examinerId = @examiner_id1, @comments = 'this dude literally stole the forbidden scroll and he aint sorry about it';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-04-20', @examinerId = @examiner_id1, @comments = 'this dude literally stole the forbidden scroll and he aint sorry about it';
 
 	EXEC addPublication @title = 'my ninja way', @pubDate = '2022-11-19', @host = 'konoha news', @place = 'konoha', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -333,11 +333,11 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2022-6-09', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @examinerId = @examiner_id1, @comments = 'at least this one isnt stolen...or is it???';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @examinerId = @examiner_id1, @comments = 'at least this one isnt stolen...or is it???';
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2022-6-09', @ThesisID, @examiner_id2);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @examinerId = @examiner_id2, @comments = 'this dude went from creating dead clones to creating a mini nuke...what klnda steroids you on ,kid?';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-6-09', @examinerId = @examiner_id2, @comments = 'this dude went from creating dead clones to creating a mini nuke...what klnda steroids you on ,kid?';
 
 	EXEC addPublication @title = 'maybe i am not a one-trick after all', @pubDate = '2023-07-07', @host = 'konoha news', @place = 'konoha', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -408,7 +408,7 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2023-01-09', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-09', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-09', @examinerId = @examiner_id1, @comments = 'ok maybe he isnt just a spoiled kid after all';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-09', @examinerId = @examiner_id1, @comments = 'ok maybe he isnt just a spoiled kid after all';
 
 
 	EXEC addPublication @title = 'sasuke finally noticed me', @pubDate = '2023-07-07', @host = 'konoha modern news', @place = 'konoha', @accepted = 1;
@@ -493,13 +493,13 @@ GO
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-01', @ExaminerName = 'Abigaul Thorne', @National = 0, @fieldOfWork = 'Philosiphy';
 	set @examiner_id1 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-01', @grade = 0.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-01', @examinerId = @examiner_id1, @comments = 'Its abhorent to say that catgirls are disgusting';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-01-01', @examinerId = @examiner_id1, @comments = 'Its abhorent to say that catgirls are disgusting';
 
 	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2024-01-01', @DefenseLocation = 'Court Room';
 	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2024-01-01', @ExaminerName = 'Berni', @National = 1, @fieldOfWork = 'Chocolate';
 	set @examiner_id2 = IDENT_CURRENT ('PostGradUser');
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2024-01-01', @grade = 70.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2024-01-01', @examinerId = @examiner_id2, @comments = 'Meh';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2024-01-01', @examinerId = @examiner_id2, @comments = 'Meh';
 
 	EXEC addPublication @title = 'Catgirls and Otakus', @pubDate = '2024-02-02', @host = 'Times', @place = 'The web', @accepted = 0;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -538,11 +538,11 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2034-01-01', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @grade = 90.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @examinerId = @examiner_id1, @comments = 'Sharks indeed look like they are swimming';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @examinerId = @examiner_id1, @comments = 'Sharks indeed look like they are swimming';
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2034-01-01', @ThesisID, @examiner_id2);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @grade = 95.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @examinerId = @examiner_id2, @comments = 'Sharks Swim! WOW!';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2034-01-01', @examinerId = @examiner_id2, @comments = 'Sharks Swim! WOW!';
 
 	EXEC addPublication @title = 'Sharks swim', @pubDate = '2034-01-02', @host = 'AquaNews', @place = 'Ocean', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
@@ -612,12 +612,216 @@ GO
 
 	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2026-01-01', @ThesisID, @examiner_id1);
 	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2026-01-01', @grade = 100.00;
-	EXEC AddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2026-01-01', @examinerId = @examiner_id1, @comments = 'Wonderful';
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2026-01-01', @examinerId = @examiner_id1, @comments = 'Wonderful';
 
 
 	EXEC addPublication @title = 'CPU Interuppts', @pubDate = '2026-05-01', @host = 'CNN', @place = 'Internet', @accepted = 1;
 	SET @Pub_ID = IDENT_CURRENT ('Publication');
 	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
 GO
+---------------------------------------------------------------------------------------------------------
+GO
+	-- all declares
+	DECLARE @ThesisID INT;
+	DECLARE @ThesisPaymentID INT;
+	DECLARE @SupervisorID INT;
+	DECLARE @StudentID INT;
+	DECLARE @SuccessThesisPayment BIT;
+	DECLARE @ProgressReportNum INT;
+	DECLARE @examiner_id1 INT;
+	DECLARE @examiner_id2 INT;
+	DECLARE @Pub_ID INT;
+	DECLARE @CourseID INT;
+	DECLARE @Fees DECIMAL;
+	DECLARE @CoursePaymentId INT;
+
+	-- 1 supervisor, 2 students, 3 phone numbers, 3 thesis, 4 progress reports, 4 defenses, 2 examiners, 2 courses, 3 publictaions
+
+	-- supervisor
+	EXEC SupervisorRegister @first_name = 'Arturious', @last_name = 'Askeladd', @password = 'deaddad', @faculty = 'History', @email = 'idonthave@gmail.com';
+	SET @SupervisorID = IDENT_CURRENT ('PostGradUser');
+
+	-- gucian Studnet with 2 phones and 2 thesis and 3 progress reports and 3 defenses
+	EXEC StudentRegister @first_name = 'thorfinn' , @last_name = 'thors', @password = 'wheremydad',
+		@faculty = 'History', @Gucian = 1, @email = 'none@gmail.com', @address = 'no home';
+	SET @StudentID = IDENT_CURRENT ('PostGradUser');
+	EXEC  addUndergradID @studentID = @StudentID, @undergradID = 1341;
+
+	UPDATE GucianStudent set GPA = 2.00, type = 'Ph.D' WHERE GucianStudent.id = @StudentID;
+
+	-- phones
+	EXEC addMobile @ID = @StudentID, @mobile_number = '01111114412';
+	EXEC addMobile @ID = @StudentID, @mobile_number = '06666664512';
+
+	-- thesis 1, 2 reports, 2 defenses, 1 pub
+	-- thesis 1 & grade
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('Philosiphy', 'Phd', 'how to avenge your dad', '2021-01-10', '2022-11-10', 4);
+	SET @ThesisID = IDENT_CURRENT ('Thesis');
+
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 140000, @noOfInstallments = 5,
+		@fundPercentage = 60, @Success = @SuccessThesisPayment OUTPUT;
+	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2021-01-11';
+
+	EXEC AdminUpdateExtension @ThesisID;
+	EXEC AdminUpdateExtension @ThesisID;
+
+	INSERT INTO GUCianStudentRegisterThesis(sid, supid, serial_no) VALUES(@StudentID, @SupervisorID ,@ThesisID);
+	
+	EXEC AddGrade @ThesisSerialNo = @ThesisID, @ThesisGrade = 70.00;
+
+	-- 2 progress reports
+	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-01-07';
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
+
+	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 30, @description = 'need sharp knife';
+
+	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
+	--
+	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-02-08';
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
+
+	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 60, @description = 'and a good bow';
+
+	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 1;
+
+	-- defenses and publications
+	-- 2 defenses
+	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-11-01', @DefenseLocation = 'Court Room';
+	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-11-01', @ExaminerName = 'Ragnar', @National = 0, @fieldOfWork = 'History';
+	set @examiner_id1 = IDENT_CURRENT ('PostGradUser');
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-11-01', @grade = 20.00;
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2022-11-01', @examinerId = @examiner_id1, @comments = 'bad temper';
+
+	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-08-09', @DefenseLocation = 'execution room';
+	EXEC AddExaminer @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-08-09', @ExaminerName = 'king of england', @National = 0, @fieldOfWork = 'I dont work';
+	set @examiner_id2 = IDENT_CURRENT ('PostGradUser');
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-08-09', @grade = 97.00;
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2023-08-09', @examinerId = @examiner_id2, @comments = 'calm down son';
+
+	EXEC addPublication @title = 'I cat write', @pubDate = '2024-11-10', @host = 'the news room', @place = 'back room', @accepted = 1;
+	SET @Pub_ID = IDENT_CURRENT ('Publication');
+	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
+
+
+	-- thesis 2 with 1 progress report
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('anatomy', 'Master', 'how much blood do you need', '2010-09-11', '2011-08-08', 0);
+	SET @ThesisID = IDENT_CURRENT ('Thesis');
+
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 800, @noOfInstallments = 3,
+		@fundPercentage = 75, @Success = @SuccessThesisPayment OUTPUT;
+	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2011-01-01';
+
+	EXEC AdminUpdateExtension @ThesisID;
+	EXEC AdminUpdateExtension @ThesisID;
+
+	INSERT INTO GUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+
+	EXEC AddGrade @ThesisSerialNo = @ThesisID, @ThesisGrade = 87.00;
+
+	-- 1 progress report
+	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2011-01-01';
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
+
+	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 20, @description = 'maybe 2 liters';
+
+	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 1;
+
+	-- 1 defenses with old examiners and publication
+	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-01-01', @DefenseLocation = 'Tank';
+
+	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2012-01-01', @ThesisID, @examiner_id1);
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-01-01', @grade = 70.00;
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-01-01', @examinerId = @examiner_id1, @comments = '2 liters can confirm';
+
+	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2012-01-01', @ThesisID, @examiner_id2);
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-01-01', @grade = 45.00;
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2012-01-01', @examinerId = @examiner_id2, @comments = '1 maybe ?';
+
+	EXEC addPublication @title = 'too much bld', @pubDate = '2013-01-02', @host = 'bldnws', @place = 'ireland', @accepted = 1;
+	SET @Pub_ID = IDENT_CURRENT ('Publication');
+	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
+
+	-------------------------
+
+	-- none gucian Studnet with 1 phones and 1 thesis and 1 progress reports and 1 defenses
+	EXEC StudentRegister @first_name = 'canute' , @last_name = 'kingsman',@password = 'fatherleft',
+	@faculty = 'viking', @Gucian = 0, @email = 'oldhotmail', @address = 'homeless';
+	SET @StudentID = IDENT_CURRENT ('PostGradUser');
+
+	UPDATE NonGucianStudent set GPA = 4.70, type = 'Masters' WHERE NonGucianStudent.id = @StudentID;
+
+	-- phones
+	EXEC addMobile @ID = @StudentID, @mobile_number = '01111654321';
+
+	-- thesis 1, 2 reports, 2 defenses, 1 pub
+	-- thesis 1 & grade
+	INSERT INTO Thesis (field, type, title, startDate, endDate, noExtension) VALUES ('leadership', 'Masters', 'how to lead', '2022-03-04', '2028-01-01', 0);
+	SET @ThesisID = IDENT_CURRENT ('Thesis');
+
+
+	EXEC AdminIssueThesisPayment @ThesisSerialNo = @ThesisID, @amount = 4500, @noOfInstallments = 3,
+	@fundPercentage = 100, @Success = @SuccessThesisPayment OUTPUT;
+	SET @ThesisPaymentID = IDENT_CURRENT ('Payment');
+	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2022-03-04';
+
+	EXEC AdminUpdateExtension @ThesisID;
+
+	INSERT INTO NonGUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
+
+	EXEC AddGrade @ThesisSerialNo = @ThesisID, @ThesisGrade = 99.00;
+
+	-- 1 progress reports
+	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2023-01-01';
+	SET @ProgressReportNum = (SELECT TOP 1 NonGUCianProgressReport.no
+			FROM NonGUCianProgressReport
+			WHERE @studentID = NonGUCianProgressReport.sid ORDER BY NonGUCianProgressReport.no DESC);
+
+	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 77, @description = 'sigma male';
+
+	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
+
+	-- ADDING COURSE --
+
+	
+	EXEC AddCourse @courseCode = 'BSN 101', @creditHrs = 4, @fees = 12000;
+	SET @CourseID = IDENT_CURRENT('Course');
+
+	EXEC linkCourseStudent @courseID = @CourseID, @studentID = @StudentID;
+
+	EXEC addStudentCourseGrade @courseID = @CourseID, @studentID = @StudentID, @grade = 78.0;
+
+	
+	SELECT @Fees = fees FROM Course WHERE id = @CourseID;
+	
+	INSERT INTO PAYMENT (amount, no_Installments, fundPercentage) VALUES (@Fees, 2, 10);
+	SET @CoursePaymentId = IDENT_CURRENT ('Payment');
+	EXEC AdminIssueInstallPayment @paymentID = @CoursePaymentId, @InstallStartDate = '2023-01-01';
+
+	INSERT INTO NonGucianStudentPayForCourse VALUES (@StudentID, @CoursePaymentId, @CourseID);
+
+	-- defenses and publications
+	-- 1 defenses
+	EXEC AddDefenseGucian @ThesisSerialNo = @ThesisID, @DefenseDate = '2028-01-01', @DefenseLocation = 'D1';
+
+	INSERT INTO ExaminerEvaluateDefense (date, serialNo, examinerId) VALUES ('2028-01-01', @ThesisID, @examiner_id1);
+	EXEC AddDefenseGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2028-01-01', @grade = 105.00;
+	EXEC ExaminerAddCommentsGrade @ThesisSerialNo = @ThesisID, @DefenseDate = '2028-01-01', @examinerId = @examiner_id1, @comments = 'good work';
+
+
+	EXEC addPublication @title = 'leadrship skills', @pubDate = '2028-05-01', @host = 'BCC', @place = 'Internet', @accepted = 1;
+	SET @Pub_ID = IDENT_CURRENT ('Publication');
+	EXEC linkPubThesis @PubID = @Pub_ID, @thesisSerialNo = @ThesisID;
+GO
+
+
 
 UPDATE Installment SET done = 1 WHERE date < '2021-01-01';
+

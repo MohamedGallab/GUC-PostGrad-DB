@@ -512,9 +512,21 @@ GO
 	AS
 	UPDATE ExaminerEvaluateDefense
 	SET comment = @comments
-	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate AND ExaminerEvaluateDefense.examinerId = @examinerId
+	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate
 RETURN
 
+-- add with examiner ID
+GO 
+	CREATE PROC ExaminerAddCommentsGrade
+	@ThesisSerialNo INT,
+	@DefenseDate DATETIME,
+	@examinerId INT,
+	@comments VARCHAR(300)
+	AS
+	UPDATE ExaminerEvaluateDefense
+	SET comment = @comments
+	WHERE ExaminerEvaluateDefense.serialNo = @ThesisSerialNo AND ExaminerEvaluateDefense.date = @DefenseDate
+RETURN
 
 -- 6
 
