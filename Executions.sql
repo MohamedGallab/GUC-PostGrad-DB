@@ -127,9 +127,6 @@ USE PostGradDB;
 
 -- a)
 
-SELECT * FROM Thesis;
-INSERT INTO Defense (serialNumber,date,location) values (1,'2020/12/9 12:12:12','Elmeshmesh');
-SELECT * FROM Defense;
 EXEC AddDefenseGrade 1, '2020/12/9 12:12:12', 5.2;
 
 -- b)
