@@ -148,20 +148,25 @@ EXEC addUndergradID 9, '4923423'
 EXEC ViewCoursesGrades 12
 --e
 	--i)
-	EXEC ViewCoursePaymentsInstall 12
+	EXEC ViewCoursePaymentsInstall 12 --non gucian so it gives data
+	EXEC ViewCoursePaymentsInstall 9  --gucian so no output
 	--ii)
-	EXEC ViewThesisPaymentsInstall 9
+	EXEC ViewThesisPaymentsInstall 9 --gucian
+	EXEC ViewThesisPaymentsInstall 12 --non gucian (doesnt make a difference but both cases anyways)
+	
 	--iii)
-	EXEC ViewUpcomingInstallments 12
+	EXEC ViewUpcomingInstallments 9 --gucian
+	EXEC ViewUpcomingInstallments 12 --non gucian (doesnt make a difference but both cases anyways)
 	--iv)
-	EXEC ViewMissedInstallments 9
+	EXEC ViewMissedInstallments 9 --gucian	
+	EXEC ViewMissedInstallments 12 --non gucian (doesnt make a difference but both cases anyways)
 --f
 	--i)
 	EXEC AddProgressReport 5, '2022-11-09'
 	--ii)
-	EXEC FillProgressReport 5, 10, 75, 'i am gonna pass out cause this uses more chakra than what i get from the ramen'
+	EXEC FillProgressReport 5, 4, 75, 'i am gonna pass out cause this uses more chakra than what i get from the ramen'
 --g)
-EXEC ViewEvalProgressReport 6, 2
+EXEC ViewEvalProgressReport 6, 1
 --h)
 EXEC addPublication 'i think i did it too well,they wanna make me hokage now' ,'2024-07-07' ,'konoha news' ,'konoha' ,1
 --i)
