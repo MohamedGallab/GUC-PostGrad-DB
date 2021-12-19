@@ -72,8 +72,7 @@ CREATE TABLE Course(
 CREATE TABLE Supervisor(
 	id INT, 
 	-- name instead of first + last ?
-	first_name VARCHAR(20),
-	last_name VARCHAR(20),
+	name VARCHAR(20),
 	faculty VARCHAR(20),
 	PRIMARY KEY(id),
 	FOREIGN KEY(id) REFERENCES PostGradUser ON DELETE CASCADE ON UPDATE CASCADE
@@ -138,7 +137,7 @@ CREATE TABLE Defense(
 
 CREATE TABLE GUCianProgressReport(
 	sid INT,
-	no INT IDENTITY,
+	no INT,
 	date DATE,
 	eval INT,
 	state INT,
@@ -155,7 +154,7 @@ CREATE TABLE GUCianProgressReport(
 
 CREATE TABLE NonGUCianProgressReport(
 	sid INT,
-	no INT IDENTITY,
+	no INT,
 	date DATE,
 	eval INT,
 	state INT,

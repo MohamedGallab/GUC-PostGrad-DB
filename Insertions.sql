@@ -36,7 +36,7 @@ GO
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 	EXEC addUndergradID @studentID = @StudentID, @undergradID = 0710;
 
-	UPDATE GucianStudent set GPA = 3.85;
+	UPDATE GucianStudent set GPA = 3.85, type = 'Ph.D' WHERE GucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '01097123419';
@@ -61,14 +61,18 @@ GO
 
 	-- 2 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2012-01-21';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'Defintion for the patronus charm';
 
 	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
 	--
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2013-06-06';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 100, @description = 'More info about the patronus charm';
 
@@ -104,7 +108,6 @@ GO
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-01-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
-	EXEC AdminUpdateExtension @ThesisID;
 
 	INSERT INTO GUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
 
@@ -112,7 +115,9 @@ GO
 
 	-- 1 progress report
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2020-01-03';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'How does the Cruciatus curse effect the brain?';
 
@@ -140,7 +145,7 @@ GO
 	@faculty = 'Ravenclaw', @Gucian = 0, @email = 'LunaLovegoodEmail', @address = 'The Lovegood House';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 
-	UPDATE NonGucianStudent set GPA = 3.50;
+	UPDATE NonGucianStudent set GPA = 3.50, type = 'Ph.D' WHERE NonGucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '01002124331';
@@ -165,7 +170,9 @@ GO
 
 	-- 1 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-01-05';
-	SET @ProgressReportNum = IDENT_CURRENT ('NonGUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 NonGUCianProgressReport.no
+			FROM NonGUCianProgressReport
+			WHERE @studentID = NonGUCianProgressReport.sid ORDER BY NonGUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'Liquid luck and its effect on the real world';
 
@@ -174,7 +181,7 @@ GO
 	-- ADDING COURSE --
 
 	
-	EXEC AddCourse @courseCode = 'Transfiguration 101', @creditHrs = 8, @fees = 100999;
+	EXEC AddCourse @courseCode = 'Transfiguration 101', @creditHrs = 2, @fees = 5000;
 	SET @CourseID = IDENT_CURRENT('Course');
 
 	EXEC linkCourseStudent @courseID = @CourseID, @studentID = @StudentID;
@@ -233,7 +240,7 @@ GO
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 	EXEC  addUndergradID @studentID = @StudentID, @undergradID = 111;
 
-	UPDATE GucianStudent set GPA = 4.00;
+	UPDATE GucianStudent set GPA = 3.70, type = 'Ph.d' WHERE GucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '07778000454';
@@ -250,7 +257,6 @@ GO
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2020-12-01';
 
 	EXEC AdminUpdateExtension @ThesisID;
-	EXEC AdminUpdateExtension @ThesisID;
 
 	INSERT INTO GUCianStudentRegisterThesis(sid, supid, serial_no) VALUES(@StudentID, @SupervisorID ,@ThesisID);
 	
@@ -258,14 +264,18 @@ GO
 
 	-- 2 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-07-01';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'this is the description of how i stole my main jutsu lol';
 
 	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
 	--
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2022-03-06';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 100, @description = 'i think i almost got it,just need to try it a few more times';
 
@@ -310,7 +320,9 @@ GO
 
 	-- 1 progress report
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-05-01';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'my throat is starting to hurt cause i scream too hard when i do the jutsu';
 
@@ -338,7 +350,7 @@ GO
 	@faculty = 'genin', @Gucian = 0, @email = 'noticeMeDad@gmail.com', @address = 'i live with the hokage boiiii';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 
-	UPDATE NonGucianStudent set GPA = 3.00;
+	UPDATE NonGucianStudent set GPA = 3.00, type = 'Masters' WHERE NonGucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '01924999224';
@@ -363,7 +375,9 @@ GO
 
 	-- 1 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2021-01-01';
-	SET @ProgressReportNum = IDENT_CURRENT ('NonGUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 NonGUCianProgressReport.no
+			FROM NonGUCianProgressReport
+			WHERE @studentID = NonGUCianProgressReport.sid ORDER BY NonGUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'i just created a rasengan the size of a pea and i am proud';
 
@@ -372,7 +386,7 @@ GO
 	-- ADDING COURSE --
 
 	
-	EXEC AddCourse @courseCode = 'nin501', @creditHrs = 8, @fees = 100999;
+	EXEC AddCourse @courseCode = 'nin501', @creditHrs = 8, @fees = 9000;
 	SET @CourseID = IDENT_CURRENT('Course');
 
 	EXEC linkCourseStudent @courseID = @CourseID, @studentID = @StudentID;
@@ -429,9 +443,9 @@ GO
 	EXEC StudentRegister @first_name = 'Abd Elghafour' , @last_name = 'El Boray', @password = 'Biro102030',
 		@faculty = 'Philosiphy', @Gucian = 1, @email = 'barbora@gmail.com', @address = 'Wekalet El balah, St 1, Apt 3';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
-	EXEC  addUndergradID @studentID = @StudentID, @undergradID = 111;
+	EXEC  addUndergradID @studentID = @StudentID, @undergradID = 101;
 
-	UPDATE GucianStudent set GPA = 3.0;
+	UPDATE GucianStudent set GPA = 3.90, type = 'Ph.D' WHERE GucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '01066554412';
@@ -456,14 +470,18 @@ GO
 
 	-- 2 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2022-01-07';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 50, @description = 'So far, Venician catgirls seem to ellicit the highest reaction in our subjects';
 
-	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 5;
+	EXEC EvaluateProgressReport @supervisorID = @SupervisorID, @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @evaluation = 3;
 	--
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2022-02-08';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 70, @description = 'In our recent research, it has been concluded that otakus are into all kinds of catgirls. Disgusting.';
 
@@ -507,7 +525,9 @@ GO
 
 	-- 1 progress report
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2031-01-01';
-	SET @ProgressReportNum = IDENT_CURRENT ('GUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 20, @description = 'So far sharks do seem to swim';
 
@@ -535,7 +555,7 @@ GO
 	@faculty = 'MET', @Gucian = 0, @email = 'fatma.koshary@guc.edu.eg', @address = 'Wekalet ElBalah,St1,Apt2';
 	SET @StudentID = IDENT_CURRENT ('PostGradUser');
 
-	UPDATE NonGucianStudent set GPA = 0.8;
+	UPDATE NonGucianStudent set GPA = 2.70, type = 'Masters' WHERE NonGucianStudent.id = @StudentID;
 
 	-- phones
 	EXEC addMobile @ID = @StudentID, @mobile_number = '01099654321';
@@ -552,7 +572,6 @@ GO
 	EXEC AdminIssueInstallPayment @paymentID = @ThesisPaymentID, @InstallStartDate = '2024-03-04';
 
 	EXEC AdminUpdateExtension @ThesisID;
-	EXEC AdminUpdateExtension @ThesisID;
 
 	INSERT INTO NonGUCianStudentRegisterThesis VALUES(@StudentID, @SupervisorID ,@ThesisID);
 
@@ -560,7 +579,9 @@ GO
 
 	-- 1 progress reports
 	EXEC AddProgressReport @thesisSerialNo = @ThesisID, @progressReportDate = '2025-01-01';
-	SET @ProgressReportNum = IDENT_CURRENT ('NonGUCianProgressReport');
+	SET @ProgressReportNum = (SELECT TOP 1 NonGUCianProgressReport.no
+			FROM NonGUCianProgressReport
+			WHERE @studentID = NonGUCianProgressReport.sid ORDER BY NonGUCianProgressReport.no DESC);
 
 	EXEC FillProgressReport @thesisSerialNo = @ThesisID, @progressReportNo = @ProgressReportNum, @state = 70, @description = 'Has been successful in re impleminting interrupt commands in Intel processors, resulting in 700% faster CPUs';
 

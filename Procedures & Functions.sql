@@ -59,7 +59,7 @@ CREATE PROC SupervisorRegister
 @first_name VARCHAR(20), @last_name VARCHAR(20), @password VARCHAR(20),@faculty VARCHAR(20),@email VARCHAR(50)
 AS
 	INSERT INTO PostGradUser VALUES(@email, @password);
-	INSERT INTO Supervisor (id, first_name,last_name,faculty) VALUES (SCOPE_IDENTITY(), @first_name, @last_name, @faculty);
+	INSERT INTO Supervisor (id, name, faculty) VALUES (SCOPE_IDENTITY(), @first_name + ' ' + @last_name, @faculty);
 RETURN
 
 -- 2
@@ -158,7 +158,7 @@ RETURN
 GO
 CREATE PROC AdminViewStudentThesisBySupervisor
 AS
-	SELECT Supervisor.first_name + ' ' + Supervisor.last_name as 'Supervisor Name', Thesis.title, allStudentsRegisterThesis.firstname + ' ' + allStudentsRegisterThesis.lastname as 'Student Name'
+	SELECT Supervisor.name as 'Supervisor Name', Thesis.title, allStudentsRegisterThesis.firstname + ' ' + allStudentsRegisterThesis.lastname as 'Student Name'
 	FROM 
 		allStudentsRegisterThesis
 		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
@@ -301,7 +301,7 @@ GO
 CREATE PROC ViewExamSupDefense
 @defenseDate datetime
 AS
-	SELECT Supervisor.first_name + ' ' + Supervisor.last_name as 'Supervisor Name', Examiner.name
+	SELECT Supervisor.name as 'Supervisor Name', Examiner.name
 	FROM allStudentsRegisterThesis
 		INNER JOIN Thesis ON Thesis.serialNumber = allStudentsRegisterThesis.serial_no
 		INNER JOIN Supervisor ON allStudentsRegisterThesis.supid = Supervisor.id
@@ -363,10 +363,11 @@ CREATE PROC UpdateSupProfile
 @faculty VARCHAR(20)
 AS
 	UPDATE Supervisor
-	SET Supervisor.first_name = @name, Supervisor.faculty = @faculty
+	SET Supervisor.name = @name, Supervisor.faculty = @faculty
 	WHERE Supervisor.id = @supervisorID
 RETURN
 
+/*
 -- to update both names
 GO
 CREATE PROC UpdateSupProfileFullName
@@ -379,6 +380,7 @@ AS
 	SET Supervisor.first_name = @first_name, Supervisor.last_name = @last_name, Supervisor.faculty = @faculty
 	WHERE Supervisor.id = @supervisorID
 RETURN
+*/
 
 -- d) View all publications of a student.
 GO
@@ -681,6 +683,9 @@ GO
 							SELECT allStudentsRegisterThesis.supid
 							FROM allStudentsRegisterThesis
 							WHERE allStudentsRegisterThesis.serial_no = @thesisSerialNo);
+
+	DECLARE @reportNum INT = 1;
+
 	IF(
 		EXISTS	(
 				SELECT *
@@ -689,11 +694,27 @@ GO
 				)
 	)
 	BEGIN
-		INSERT INTO GUCianProgressReport(sid,thesisSerialNumber,date,supid) VALUES (@studentID,@thesisSerialNo,@progressReportDate,@supervisorID)
+		IF (EXISTS (SELECT * FROM GUCianProgressReport WHERE @studentID = GUCianProgressReport.sid))
+		BEGIN
+			SELECT TOP 1 @reportNum = GUCianProgressReport.no
+			FROM GUCianProgressReport
+			WHERE @studentID = GUCianProgressReport.sid ORDER BY GUCianProgressReport.no DESC
+
+			SET @reportNum = @reportNum + 1;
+		END
+		INSERT INTO GUCianProgressReport(no, sid,thesisSerialNumber,date,supid) VALUES (@reportNum, @studentID,@thesisSerialNo,@progressReportDate,@supervisorID);
 	END
 	ELSE
 	BEGIN
-		INSERT INTO NonGUCianProgressReport(sid,thesisSerialNumber,date,supid) VALUES (@studentID,@thesisSerialNo,@progressReportDate,@supervisorID)
+		IF (EXISTS (SELECT * FROM NonGUCianProgressReport WHERE @studentID = NonGUCianProgressReport.sid))
+		BEGIN
+			SELECT TOP 1 @reportNum = NonGUCianProgressReport.no
+			FROM NonGUCianProgressReport
+			WHERE @studentID = NonGUCianProgressReport.sid ORDER BY NonGUCianProgressReport.no DESC
+
+			SET @reportNum = @reportNum + 1;
+		END
+		INSERT INTO NonGUCianProgressReport(no, sid,thesisSerialNumber,date,supid) VALUES (@reportNum, @studentID,@thesisSerialNo,@progressReportDate,@supervisorID);
 	END
 RETURN
 	-- ii)
