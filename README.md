@@ -1,5 +1,5 @@
 # GUC-PostGrad-DB
-> an SQL database to be used for a [web app](https://github.com/SigmaSquad5/PostGrad-Web-App) that postgrads and their supervisors can utilized to keep track of the post graduate studies
+an SQL database to be used for a [web app](https://github.com/SigmaSquad5/PostGrad-Web-App) that postgrads and their supervisors can utilized to keep track of the post graduate studies
 
 ## Table of Contents
 * [General Info](#general-information)
